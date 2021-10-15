@@ -19,7 +19,7 @@ function flagbox () {
     && [ "${2}" == "$(echo "${2}" | sed 's/[^0-9]//')" ]; then
       CHAIN="${2}"
   elif [ "${1}" == "--chain" ] && [ ${#} -eq 3 ] && [ "${2}" == "11" ] \
-    && [ "${3}" == "$(echo "${3}" | sed 's/[^a-zA-Z0-9/_.-]//')" ]; then
+    && [ "${3}" == "$(echo "${3}" | sed 's/[^a-zA-Z0-9/_.~-]//')" ]; then
       CHAIN="11"
       FILE="${3}"
   else
@@ -91,7 +91,7 @@ function flagbox () {
       return 1
     fi
 
-    declare -r PROHIBITED='.!#'
+    declare -r PROHIBITED='.!#/~\$%'
     if [ "${FLAGBOX_FLAG_SYMB}" != \
       "$(echo "${FLAGBOX_FLAG_SYMB}" | sed 's/['${PROHIBITED}']//g')" ]; then
         echo "${RED}FLAGBOX_FLAG_SYMB contains prohibited characters:${RESET} ${PROHIBITED}" >&2

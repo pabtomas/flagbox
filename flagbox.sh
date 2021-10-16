@@ -13,12 +13,13 @@ function flagbox () {
   local CHAIN=""
   local FILE=""
 
-  if [ "${1}" == "--alias" ] && [ ${#} -eq 1 ]; then
+  if [ ${#} -eq 1 ] && [ "${1}" == "--alias" ]; then
     ALIAS=1
-  elif [ "${1}" == "--chain" ] && [ ${#} -eq 2 ] \
-    && [ "${2}" == "$(echo "${2}" | sed 's/[^0-9]//')" ]; then
+  elif [ ${#} -eq 2 ] && [ "${1}" == "--chain" ] \
+    && [ ${#2} -le $(eval "${FLAGBOX_SZ}") ] \
+    && [ "${2}" == "$(echo "${2}" | sed 's/[^01]//')" ]; then
       CHAIN="${2}"
-  elif [ "${1}" == "--chain" ] && [ ${#} -eq 3 ] && [ "${2}" == "11" ] \
+  elif [ ${#} -eq 3 ] && [ "${1}" == "--chain" ] && [ "${2}" == "11" ] \
     && [ "${3}" == "$(echo "${3}" | sed 's/[^a-zA-Z0-9/_.~-]//')" ]; then
       CHAIN="11"
       FILE="${3}"
@@ -38,34 +39,8 @@ function flagbox () {
 
     declare -g FLAGBOX_BOX=1
 
-#   Default user variables {{{2
+    source "${HOME}/.flagbox.conf"
 
-    declare -r DEFAULT_SZ=3
-    declare -r DEFAULT_FLAG_SYMB=","
-    declare -r DEFAULT_ACTION_SYMB="?"
-    declare -r DEFAULT_STACK=0
-
-    if [ "x${FLAGBOX_SZ}" == "x" ]; then
-      FLAGBOX_SZ=${DEFAULT_SZ}
-      echo "${GREEN}FLAGBOX_SZ default value attributed:${RESET} ${DEFAULT_SZ}"
-    fi
-
-    if [ "x${FLAGBOX_FLAG_SYMB}" == "x" ]; then
-      FLAGBOX_FLAG_SYMB="${DEFAULT_FLAG_SYMB}"
-      echo "${GREEN}FLAGBOX_FLAG_SYMB default value attributed:${RESET} ${DEFAULT_FLAG_SYMB}"
-    fi
-
-    if [ "x${FLAGBOX_ACTION_SYMB}" == "x" ]; then
-      FLAGBOX_ACTION_SYMB="${DEFAULT_ACTION_SYMB}"
-      echo "${GREEN}FLAGBOX_ACTION_SYMB default value attributed:${RESET} ${DEFAULT_ACTION_SYMB}"
-    fi
-
-    if [ "x${FLAGBOX_STACK}" == "x" ]; then
-      FLAGBOX_STACK=${DEFAULT_STACK}
-      echo "${GREEN}FLAGBOX_STACK default value attributed:${RESET} ${DEFAULT_STACK}"
-    fi
-
-#   }}}
 #   Check user variables {{{2
 
     FLAGBOX_SZ=(echo "${FLAGBOX_SZ}")
@@ -114,8 +89,8 @@ function flagbox () {
       return 1
     fi
 
-    if [ "${FLAGBOX_STACK}" != "0" ] && [ "${FLAGBOX_STACK}" != "1" ]; then
-      echo "${RED}FLAGBOX_STACK should be ${RESET} 0 ${RED}or${RESET} 1" >&2
+    if [ "${FLAGBOX_STACKMODE}" != "0" ] && [ "${FLAGBOX_STACKMODE}" != "1" ]; then
+      echo "${RED}FLAGBOX_STACKMODE should be ${RESET} 0 ${RED}or${RESET} 1" >&2
       return 1
     fi
 
@@ -135,7 +110,7 @@ function flagbox () {
       done
     fi
 
-    eval "declare -a -r BIN=( $(printf %$(eval "${FLAGBOX_SZ}")s \
+    eval "declare -r -a BIN=( $(printf %$(eval "${FLAGBOX_SZ}")s \
       | sed 's/ /{0..1}/g') )"
 
     for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
@@ -206,6 +181,7 @@ function flagbox () {
               done < ${BACKUP}
             else
               local J=1
+              unset FLAGBOX && declare -g -A FLAGBOX
               while IFS= read -r LINE; do
                 FLAGBOX[${J},${I}]="${LINE}"
                 (( I+=1 ))

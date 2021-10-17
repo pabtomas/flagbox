@@ -16,7 +16,7 @@ function flagbox () {
   if [ ${#} -eq 1 ] && [ "${1}" == "--alias" ]; then
     ALIAS=1
   elif [ ${#} -eq 2 ] && [ "${1}" == "--chain" ] \
-    && [ ${#2} -le $(eval "${FLAGBOX_SZ}") ] \
+    && [ ${#2} -le $(eval "${FLAGBOX_SIZE}") ] \
     && [ "${2}" == "$(echo "${2}" | sed 's/[^01]//')" ]; then
       CHAIN="${2}"
   elif [ ${#} -eq 3 ] && [ "${1}" == "--chain" ] && [ "${2}" == "11" ] \
@@ -35,29 +35,75 @@ function flagbox () {
   declare -r RESET=$(tput sgr0)
 
   if [ ${ALIAS} -eq 1 ]; then
-# Generate aliases case {{{1
+# --alias {{{1
 
-    declare -g FLAGBOX_BOX=1
+#   Default user variables {{{2
 
-    source "${HOME}/.flagbox.conf"
+    [ -f "${HOME}/.flagbox.conf" ] && source "${HOME}/.flagbox.conf"
 
+    declare -r DEFAULT_SIZE=3
+    declare -r DEFAULT_FLAG_SYMB=","
+    declare -r DEFAULT_ACTION_SYMB="?"
+    declare -r DEFAULT_STACKMODE=0
+    declare -r DEFAULT_AUTOWRITE=0
+    declare -r DEFAULT_AUTOWRITEFILE="${HOME}/.flagbox_autowrite"
+    declare -r DEFAULT_AUTORESTORE=0
+    declare -r DEFAULT_AUTORESTOREFILE="${HOME}/.flagbox_autowrite"
+
+    if [ ! -v FLAGBOX_SIZE ] || [ "x${FLAGBOX_SIZE}" == "x" ]; then
+      FLAGBOX_SIZE=${DEFAULT_SIZE}
+    fi
+
+    if [ ! -v FLAGBOX_FLAG_SYMB ] || [ "x${FLAGBOX_FLAG_SYMB}" == "x" ]; then
+      FLAGBOX_FLAG_SYMB="${DEFAULT_FLAG_SYMB}"
+    fi
+
+    if [ ! -v FLAGBOX_ACTION_SYMB ] \
+      || [ "x${FLAGBOX_ACTION_SYMB}" == "x" ]; then
+        FLAGBOX_ACTION_SYMB="${DEFAULT_ACTION_SYMB}"
+    fi
+
+    if [ ! -v FLAGBOX_STACKMODE ] || [ "x${FLAGBOX_STACKMODE}" == "x" ]; then
+      FLAGBOX_STACKMODE=${DEFAULT_STACKMODE}
+    fi
+
+    if [ ! -v FLAGBOX_AUTOWRITE ] || [ "x${FLAGBOX_AUTOWRITE}" == "x" ]; then
+      FLAGBOX_AUTOWRITE=${DEFAULT_AUTOWRITE}
+    fi
+
+    if [ ! -v FLAGBOX_AUTOWRITEFILE ] \
+      || [ "x${FLAGBOX_AUTOWRITEFILE}" == "x" ]; then
+        FLAGBOX_AUTOWRITEFILE=${DEFAULT_AUTOWRITEFILE}
+    fi
+
+    if [ ! -v FLAGBOX_AUTORESTORE ] \
+      || [ "x${FLAGBOX_AUTORESTORE}" == "x" ]; then
+        FLAGBOX_AUTORESTORE=${DEFAULT_AUTORESTORE}
+    fi
+
+    if [ ! -v FLAGBOX_AUTORESTOREFILE ] \
+      || [ "x${FLAGBOX_AUTORESTOREFILE}" == "x" ]; then
+        FLAGBOX_AUTORESTOREFILE=${DEFAULT_AUTORESTOREFILE}
+    fi
+
+#   }}}
 #   Check user variables {{{2
 
-    FLAGBOX_SZ=(echo "${FLAGBOX_SZ}")
+    FLAGBOX_SIZE=(echo "${FLAGBOX_SIZE}")
     local QUOTED=()
-    for TOKEN in "${FLAGBOX_SZ[@]}"; do
+    for TOKEN in "${FLAGBOX_SIZE[@]}"; do
       QUOTED+=( "$(printf '%q' "${TOKEN}")" )
     done
-    FLAGBOX_SZ="$(printf '%s\n' "${QUOTED[*]}")"
+    FLAGBOX_SIZE="$(printf '%s\n' "${QUOTED[*]}")"
 
-    if [ "$(eval "${FLAGBOX_SZ}")" != \
-      "$(eval "${FLAGBOX_SZ}" | sed 's/[^0-9]//g')" ]; then
-        echo "${RED}FLAGBOX_SZ has to be a positive integer${RESET}" >&2
+    if [ "$(eval "${FLAGBOX_SIZE}")" != \
+      "$(eval "${FLAGBOX_SIZE}" | sed 's/[^0-9]//g')" ]; then
+        echo "${RED}FLAGBOX_SIZE has to be a positive integer${RESET}" >&2
         return 1
     fi
 
-    if [ $(eval "${FLAGBOX_SZ}") -lt 3 ]; then
-      echo "${RED}FLAGBOX_SZ has to be greater or equal to 3${RESET}" >&2
+    if [ $(eval "${FLAGBOX_SIZE}") -lt 3 ]; then
+      echo "${RED}FLAGBOX_SIZE has to be greater or equal to 3${RESET}" >&2
       return 1
     fi
 
@@ -105,15 +151,17 @@ function flagbox () {
 
     if [ ! -v FLAGBOX ]; then
       declare -g -A FLAGBOX
-      for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
-        FLAGBOX[${FLAGBOX_BOX},${I}]=''
+      FLAGBOX[BOX]=1
+      FLAGBOX[MAX]=1
+      for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+        FLAGBOX[${FLAGBOX[BOX]},${I}]=''
       done
     fi
 
-    eval "declare -r -a BIN=( $(printf %$(eval "${FLAGBOX_SZ}")s \
+    eval "declare -r -a BIN=( $(printf %$(eval "${FLAGBOX_SIZE}")s \
       | sed 's/ /{0..1}/g') )"
 
-    for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
+    for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
       local NAME=$(printf %${I}s | tr ' ' "${FLAGBOX_FLAG_SYMB}")
       alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' "0")"
     done
@@ -135,84 +183,105 @@ function flagbox () {
 #   }}}
 # }}}
   else
-# Evaluate chain case {{{1
-#   Trigger-flag chain case {{{2
+# --chain {{{1
+#   Trigger-flag chain {{{2
 
     if [ ${CHAIN} -eq 0 ]; then
-      if [ "x${FLAGBOX[${FLAGBOX_BOX},${#CHAIN}]}" == "x" ]; then
-        FLAGBOX[${FLAGBOX_BOX},${#CHAIN}]=$(realpath .)
+      if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
+        FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
       else
-        cd ${FLAGBOX[${FLAGBOX_BOX},${#CHAIN}]}
+        [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ] \
+          && cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
       fi
 #   }}}
-#   Reset-flag chain case {{{2
-    elif [ ${#CHAIN} -eq $(eval "${FLAGBOX_SZ}") ]; then
+#   Reset-flag chain {{{2
+    elif [ ${#CHAIN} -eq $(eval "${FLAGBOX_SIZE}") ]; then
       for I in $(seq 1 ${#CHAIN}); do
         if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
-          FLAGBOX[${FLAGBOX_BOX},${I}]=''
+          FLAGBOX[${FLAGBOX[BOX]},${I}]=''
         fi
       done
       flagbox --chain 1
-#   List-flag chain case {{{2
+#   List-flags chain {{{2
     elif [ "${CHAIN}" == "1" ]; then
-      for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
+      for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
         echo "$(printf %${I}s \
-          | tr ' ' "${FLAGBOX_FLAG_SYMB}") = ${FLAGBOX[${FLAGBOX_BOX},${I}]}"
+          | tr ' ' "${FLAGBOX_FLAG_SYMB}") = ${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
       done;
 #   }}}
-#   Backup chain case {{{2
+#   Backup chains {{{2
     elif [ "${CHAIN}" == "11" ]; then
       local CONCAT=""
-      for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
-        CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX_BOX},${I}]}"
+      for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+        CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
       done
       local BACKUP="${HOME}/.flagbox_backup"
       if [ "x${FILE}" != "x" ]; then
         BACKUP="$(realpath ${FILE})"
       fi
-      if [ "${CONCAT}" == \
-        "$(printf %$(eval "${FLAGBOX_SZ}")s | tr ' ' 'x')" ]; then
-          if [ -f "${BACKUP}" ]; then
-            local I=1
-            if [ $(cat ${BACKUP} | wc -l) -le $(eval "${FLAGBOX_SZ}") ]; then
-              while IFS= read -r LINE; do
-                FLAGBOX[${FLAGBOX_BOX},${I}]="${LINE}"
-                (( I+=1 ))
-              done < ${BACKUP}
-            else
-              local J=1
-              unset FLAGBOX && declare -g -A FLAGBOX
-              while IFS= read -r LINE; do
-                FLAGBOX[${J},${I}]="${LINE}"
-                (( I+=1 ))
-                if [ ${I} -gt $(eval "${FLAGBOX_SZ}") ]; then
-                  (( J+=1 ))
-                  I=1
-                fi
-              done < ${BACKUP}
-            fi
-            flagbox --chain 1 \
-              && echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
+#     Restore {{{3
+      if [ ${#CONCAT} -eq $(eval "${FLAGBOX_SIZE}") ]; then
+        if [ -f "${BACKUP}" ]; then
+          local I=1
+#       Box restore {{{4
+          if [ $(cat ${BACKUP} | wc -l) -le $(eval "${FLAGBOX_SIZE}") ]; then
+            while IFS= read -r LINE; do
+              FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
+              (( I+=1 ))
+            done < ${BACKUP}
+#       }}}
+#       Full restore {{{4
+          else
+            local J=1
+            unset FLAGBOX && declare -g -A FLAGBOX
+            while IFS= read -r LINE; do
+              FLAGBOX[${J},${I}]="${LINE}"
+              (( I+=1 ))
+              if [ ${I} -gt $(eval "${FLAGBOX_SIZE}") ]; then
+                (( J+=1 ))
+                I=1
+              fi
+            done < ${BACKUP}
           fi
+#       }}}
+          flagbox --chain 1 \
+            && echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
+        fi
+#     }}}
+#     Save {{{3
       else
         [ -f ${BACKUP} ] && rm ${BACKUP}
         local TEXT=""
-        for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
-          TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX_BOX},${I}]}")\n"
+        for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+          TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
         done
-        printf "${TEXT}" >> "${BACKUP}" \
+        printf "${TEXT}" > "${BACKUP}" \
           && echo "${GREEN}Marks saved at:${RESET} ${BACKUP}"
       fi
+#     }}}
 #   }}}
-#   Navigation chain case {{{2
+#   Navigation chains {{{2
     elif [ "${CHAIN}" == "01" ]; then
-      # local CONCAT=""
-      # for I in $(seq 1 $(eval "${FLAGBOX_SZ}")); do
-      #   CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX_BOX},${I}]}"
-      # done
-      echo ''
+      local CONCAT=""
+      for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+        CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+      done
+      if [ ${FLAGBOX[BOX]} -lt ${FLAGBOX[MAX]} ]; then
+        (( ${FLAGBOX[BOX]}+=1 ))
+      elif [ ${#CONCAT} -gt $(eval "${FLAGBOX_SIZE}") ]; then
+        (( ${FLAGBOX[BOX]}+=1 ))
+        for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+          FLAGBOX[${FLAGBOX[BOX]},${I}]=''
+        done
+      else
+        ${FLAGBOX[BOX]}=1
+      fi
     elif [ "${CHAIN}" == "10" ]; then
-      echo ''
+      if [ ${FLAGBOX[BOX]} -gt 1 ]; then
+        (( ${FLAGBOX[BOX]}-=1 ))
+      else
+        ${FLAGBOX[BOX]}=${FLAGBOX[MAX]}
+      fi
     fi
 
 #   }}}

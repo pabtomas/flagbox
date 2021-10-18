@@ -45,7 +45,8 @@ function flagbox () {
     declare -r DEFAULT_SIZE=3
     declare -r DEFAULT_FLAG_SYMB=","
     declare -r DEFAULT_ACTION_SYMB="?"
-    declare -r DEFAULT_GENERATEALIASES=true
+    declare -r DEFAULT_FLAGALIASES=true
+    declare -r DEFAULT_BOXALIASES=false
     declare -r DEFAULT_BACKUPCONFIRM=true
     declare -r DEFAULT_STACKMODE=false
     declare -r DEFAULT_AUTOWRITE=false
@@ -66,9 +67,13 @@ function flagbox () {
         FLAGBOX_ACTION_SYMB="${DEFAULT_ACTION_SYMB}"
     fi
 
-    if [ ! -v FLAGBOX_GENERATEALIASES ] \
-      || [ "x${FLAGBOX_GENERATEALIASES}" == "x" ]; then
-        FLAGBOX_GENERATEALIASES=${DEFAULT_GENERATEALIASES}
+    if [ ! -v FLAGBOX_FLAGALIASES ] \
+      || [ "x${FLAGBOX_FLAGALIASES}" == "x" ]; then
+        FLAGBOX_FLAGALIASES=${DEFAULT_FLAGALIASES}
+    fi
+
+    if [ ! -v FLAGBOX_BOXALIASES ] || [ "x${FLAGBOX_BOXALIASES}" == "x" ]; then
+        FLAGBOX_BOXALIASES=${DEFAULT_BOXALIASES}
     fi
 
     if [ ! -v FLAGBOX_BACKUPCONFIRM ] \
@@ -163,9 +168,15 @@ function flagbox () {
         return 1
     fi
 
-    if [ "${FLAGBOX_GENERATEALIASES}" != "false" ] \
-      && [ "${FLAGBOX_GENERATEALIASES}" != "true" ]; then
-        echo "${RED}FLAGBOX_GENERATEALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
+    if [ "${FLAGBOX_FLAGALIASES}" != "false" ] \
+      && [ "${FLAGBOX_FLAGALIASES}" != "true" ]; then
+        echo "${RED}FLAGBOX_FLAGALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
+
+    if [ "${FLAGBOX_BOXALIASES}" != "false" ] \
+      && [ "${FLAGBOX_BOXALIASES}" != "true" ]; then
+        echo "${RED}FLAGBOX_BOXALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
@@ -208,9 +219,11 @@ function flagbox () {
       FLAGBOX[BOX]=1
       FLAGBOX[MAX]=1
       for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
-        FLAGBOX[${FLAGBOX[BOX]},${I}]=''
+        FLAGBOX[1,${I}]=''
       done
     fi
+
+    ${FLAGBOX_BOXALIASES} && alias "1"="FLAGBOX[BOX]=1 && flagbox --chain 1"
 
     for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
       local NAME=$(printf %${I}s | tr ' ' "${FLAGBOX_FLAG_SYMB}")
@@ -334,17 +347,21 @@ function flagbox () {
         for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
           FLAGBOX[${FLAGBOX[BOX]},${I}]=''
         done
+        ${FLAGBOX_BOXALIASES}\
+          && alias "${FLAGBOX[BOX]}"="FLAGBOX[BOX]=${FLAGBOX[BOX]} && flagbox --chain 1"
       else
         FLAGBOX[BOX]=1
       fi
       FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
         | sort -n -r | head -n 1)
+      flagbox --chain 1
     elif [ "${CHAIN}" == "10" ]; then
       if [ ${FLAGBOX[BOX]} -gt 1 ]; then
         (( FLAGBOX[BOX]-=1 ))
       else
         FLAGBOX[BOX]=${FLAGBOX[MAX]}
       fi
+      flagbox --chain 1
     fi
 
 #   }}}
@@ -355,6 +372,6 @@ function flagbox () {
 [ -f "${HOME}/.flagbox.conf" ] && source "${HOME}/.flagbox.conf"
 if [ ! -f "${HOME}/.flagbox.conf" ]; then
   flagbox --alias
-elif [ -v FLAGBOX_GENERATEALIASES ] && ${FLAGBOX_GENERATEALIASES}; then
+elif [ -v FLAGBOX_FLAGALIASES ] && ${FLAGBOX_FLAGALIASES}; then
   flagbox --alias
 fi

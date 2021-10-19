@@ -35,20 +35,25 @@ function flagbox () {
   declare -r RED=$(tput setaf 1)
   declare -r GREEN=$(tput setaf 2)
   declare -r YELLOW=$(tput setaf 3)
+  declare -r REVERSE=$(tput setaf 0)$(tput setab 7)$(tput bold)
   declare -r RESET=$(tput sgr0)
 
   if ${ALIAS}; then
 # --alias {{{1
-
 #   Default user variables {{{2
 
     declare -r DEFAULT_SIZE=3
     declare -r DEFAULT_FLAG_SYMB=","
     declare -r DEFAULT_ACTION_SYMB="?"
-    declare -r DEFAULT_FLAGALIASES=true
-    declare -r DEFAULT_BOXALIASES=false
+    declare -r DEFAULT_ALIASES=true
+    declare -r DEFAULT_DECIMALNAVMODE=false
     declare -r DEFAULT_BACKUPCONFIRM=true
-    declare -r DEFAULT_STACKMODE=false
+    declare -r DEFAULT_VINSERT=false
+    declare -r DEFAULT_VNAV=true
+    declare -r DEFAULT_VRESET=false
+    declare -r DEFAULT_VRESTORE=true
+    declare -r DEFAULT_LESSOUTPUT=false
+    declare -r DEFAULT_STACKBOX=false
     declare -r DEFAULT_AUTOWRITE=false
     declare -r DEFAULT_AUTOWRITEFILE="${HOME}/.flagbox_autowrite"
     declare -r DEFAULT_AUTORESTORE=false
@@ -67,13 +72,13 @@ function flagbox () {
         FLAGBOX_ACTION_SYMB="${DEFAULT_ACTION_SYMB}"
     fi
 
-    if [ ! -v FLAGBOX_FLAGALIASES ] \
-      || [ "x${FLAGBOX_FLAGALIASES}" == "x" ]; then
-        FLAGBOX_FLAGALIASES=${DEFAULT_FLAGALIASES}
+    if [ ! -v FLAGBOX_ALIASES ] || [ "x${FLAGBOX_ALIASES}" == "x" ]; then
+        FLAGBOX_ALIASES=${DEFAULT_ALIASES}
     fi
 
-    if [ ! -v FLAGBOX_BOXALIASES ] || [ "x${FLAGBOX_BOXALIASES}" == "x" ]; then
-        FLAGBOX_BOXALIASES=${DEFAULT_BOXALIASES}
+    if [ ! -v FLAGBOX_DECIMALNAVMODE ] \
+      || [ "x${FLAGBOX_DECIMALNAVMODE}" == "x" ]; then
+        FLAGBOX_DECIMALNAVMODE=${DEFAULT_DECIMALNAVMODE}
     fi
 
     if [ ! -v FLAGBOX_BACKUPCONFIRM ] \
@@ -81,8 +86,29 @@ function flagbox () {
         FLAGBOX_BACKUPCONFIRM=${DEFAULT_BACKUPCONFIRM}
     fi
 
-    if [ ! -v FLAGBOX_STACKMODE ] || [ "x${FLAGBOX_STACKMODE}" == "x" ]; then
-      FLAGBOX_STACKMODE=${DEFAULT_STACKMODE}
+    if [ ! -v FLAGBOX_VINSERT ] || [ "x${FLAGBOX_VINSERT}" == "x" ]; then
+      FLAGBOX_VINSERT=${DEFAULT_VINSERT}
+    fi
+
+    if [ ! -v FLAGBOX_VNAV ] || [ "x${FLAGBOX_VNAV}" == "x" ]; then
+      FLAGBOX_VNAV=${DEFAULT_VNAV}
+    fi
+
+    if [ ! -v FLAGBOX_VRESET ] || [ "x${FLAGBOX_VRESET}" == "x" ]; then
+      FLAGBOX_VRESET=${DEFAULT_VRESET}
+    fi
+
+    if [ ! -v FLAGBOX_VRESTORE ] || [ "x${FLAGBOX_VRESTORE}" == "x" ]; then
+      FLAGBOX_VRESTORE=${DEFAULT_VRESTORE}
+    fi
+
+    if [ ! -v FLAGBOX_LESSOUTPUT ] \
+      || [ "x${FLAGBOX_LESSOUTPUT}" == "x" ]; then
+        FLAGBOX_LESSOUTPUT=${DEFAULT_LESSOUTPUT}
+    fi
+
+    if [ ! -v FLAGBOX_STACKBOX ] || [ "x${FLAGBOX_STACKBOX}" == "x" ]; then
+      FLAGBOX_STACKBOX=${DEFAULT_STACKBOX}
     fi
 
     if [ ! -v FLAGBOX_AUTOWRITE ] || [ "x${FLAGBOX_AUTOWRITE}" == "x" ]; then
@@ -162,21 +188,21 @@ function flagbox () {
       echo -e "${YELLOW}Your are highly discouraged to use those characters for FLAGBOX_FLAG_SYMB and FLAGBOX_ACTION_SYMB. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
     fi
 
-    if [ "${FLAGBOX_STACKMODE}" != "false" ] \
-      && [ "${FLAGBOX_STACKMODE}" != "true" ]; then
-        echo "${RED}FLAGBOX_STACKMODE should be ${RESET} true ${RED}or${RESET} false" >&2
+    if [ "${FLAGBOX_STACKBOX}" != "false" ] \
+      && [ "${FLAGBOX_STACKBOX}" != "true" ]; then
+        echo "${RED}FLAGBOX_STACKBOX should be ${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [ "${FLAGBOX_FLAGALIASES}" != "false" ] \
-      && [ "${FLAGBOX_FLAGALIASES}" != "true" ]; then
-        echo "${RED}FLAGBOX_FLAGALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
+    if [ "${FLAGBOX_ALIASES}" != "false" ] \
+      && [ "${FLAGBOX_ALIASES}" != "true" ]; then
+        echo "${RED}FLAGBOX_ALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [ "${FLAGBOX_BOXALIASES}" != "false" ] \
-      && [ "${FLAGBOX_BOXALIASES}" != "true" ]; then
-        echo "${RED}FLAGBOX_BOXALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
+    if [ "${FLAGBOX_DECIMALNAVMODE}" != "false" ] \
+      && [ "${FLAGBOX_DECIMALNAVMODE}" != "true" ]; then
+        echo "${RED}FLAGBOX_DECIMALNAVMODE should be ${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
@@ -186,6 +212,35 @@ function flagbox () {
         return 1
     fi
 
+    if [ "${FLAGBOX_VINSERT}" != "false" ] \
+      && [ "${FLAGBOX_VINSERT}" != "true" ]; then
+        echo "${RED}FLAGBOX_VINSERT should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
+
+    if [ "${FLAGBOX_VNAV}" != "false" ] \
+      && [ "${FLAGBOX_VNAV}" != "true" ]; then
+        echo "${RED}FLAGBOX_VNAV should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
+
+    if [ "${FLAGBOX_VRESET}" != "false" ] \
+      && [ "${FLAGBOX_VRESET}" != "true" ]; then
+        echo "${RED}FLAGBOX_VRESET should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
+
+    if [ "${FLAGBOX_VRESTORE}" != "false" ] \
+      && [ "${FLAGBOX_VRESTORE}" != "true" ]; then
+        echo "${RED}FLAGBOX_VRESTORE should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
+
+    if [ "${FLAGBOX_LESSOUTPUT}" != "false" ] \
+      && [ "${FLAGBOX_LESSOUTPUT}" != "true" ]; then
+        echo "${RED}FLAGBOX_LESSOUTPUT should be ${RESET} true ${RED}or${RESET} false" >&2
+        return 1
+    fi
 
     if [ "${FLAGBOX_AUTOWRITE}" != "false" ] \
       && [ "${FLAGBOX_AUTOWRITE}" != "true" ]; then
@@ -218,12 +273,11 @@ function flagbox () {
       declare -g -A FLAGBOX
       FLAGBOX[BOX]=1
       FLAGBOX[MAX]=1
+      FLAGBOX[MODE]="EDIT"
       for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
         FLAGBOX[1,${I}]=''
       done
     fi
-
-    ${FLAGBOX_BOXALIASES} && alias "1"="FLAGBOX[BOX]=1 && flagbox --chain 1"
 
     for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
       local NAME=$(printf %${I}s | tr ' ' "${FLAGBOX_FLAG_SYMB}")
@@ -251,32 +305,85 @@ function flagbox () {
 #   Trigger-flag chain {{{2
 
     if [ ${CHAIN} -eq 0 ]; then
-      if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
-        FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-      else
-        [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ] \
-          && cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
+#     EDITION mode {{{3
+      if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
+        if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
+          FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
+          ${FLAGBOX_VINSERT} && flagbox --chain 1
+        else
+          if [ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+            FLAGBOX[MODE]="NAV"
+          # TODO: Generate aliases
+          else
+            if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
+              cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
+            else
+              echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
+            fi
+          fi
+        fi
+#     }}}
+#     NAVIGATION mode {{{3
+      elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
+        if [ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+          FLAGBOX[MODE]="EDIT"
+          # TODO: Generate aliases
+        else
+          if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
+            cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
+          else
+            echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
+          fi
+        fi
       fi
+#     }}}
 #   }}}
 #   Reset-flag chain {{{2
     elif [ ${#CHAIN} -eq $(eval "${FLAGBOX_SIZE}") ]; then
-      for I in $(seq 1 ${#CHAIN}); do
-        if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
-          FLAGBOX[${FLAGBOX[BOX]},${I}]=''
-        fi
-      done
-      flagbox --chain 1
+#     EDITION mode {{{3
+      if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
+        for I in $(seq 1 ${#CHAIN}); do
+          if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
+            FLAGBOX[${FLAGBOX[BOX]},${I}]=''
+          fi
+        done
+        ${FLAGBOX_VRESET} && flagbox --chain 1
+#     }}}
+#     NAVIGATION mode {{{3
+      elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
+#       TODO
+        echo ''
+      fi
+#     }}}
 #   List-flags chain {{{2
     elif [ "${CHAIN}" == "1" ]; then
       local TEXT=""
+      declare -a DIR
       for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+        [ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${I}]}" ] && DIR+=(${I})
         TEXT="${TEXT}$(printf %${I}s \
           | tr ' ' "${FLAGBOX_FLAG_SYMB}") = ${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
         [ ${I} -lt $(eval "${FLAGBOX_SIZE}") ] && TEXT="${TEXT}\n"
       done
-      local BOXTEXT="[ Box ${FLAGBOX[BOX]}/${FLAGBOX[MAX]} ]"
-      local BAR="$(printf %$(echo -e "0\n$(( ($(echo -e "${TEXT}" | wc -L) \
-        - ${#BOXTEXT} + 1) / 2 ))" | sort -n -r | head -n 1)s | tr ' ' '=')"
+      local TEXTLEN=$(echo -e "${TEXT}" | wc -L)
+      local BOXTEXT="[ Box ${FLAGBOX[BOX]}/${FLAGBOX[MAX]} | ${FLAGBOX[MODE]} ]"
+      local BARLEN=$(echo -e "0\n$(( ( ${TEXTLEN} - ${#BOXTEXT} + 1) / 2 ))" \
+        | sort -n -r | head -n 1)
+      TEXT=$(printf "${TEXT}\n" | { \
+                                    I=1; \
+                                    while IFS= read -r LINE; do \
+                                      SPACES=$(printf %$(( ${BARLEN} * 2 \
+                                        + ${#BOXTEXT} - ${#LINE} ))s); \
+                                      if [ $(echo "${DIR[@]}" | tr ' ' '\n' \
+                                        | grep -x "${I}" | wc -l) -gt 0 ]; then \
+                                          echo "${REVERSE}${LINE}${SPACES}${RESET}"; \
+                                      else \
+                                        echo "${LINE}"; \
+                                      fi; \
+                                      (( I+=1 )); \
+                                    done; \
+                                  })
+      local BAR="$(printf %${BARLEN}s | tr ' ' '=')"
       echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}"
 #   }}}
 #   Backup chains {{{2
@@ -289,48 +396,57 @@ function flagbox () {
       if [ "x${FILE}" != "x" ]; then
         BACKUP="$(realpath ${FILE})"
       fi
-#     Restore {{{3
-      if [ ${#CONCAT} -eq $(eval "${FLAGBOX_SIZE}") ]; then
-        if [ -f "${BACKUP}" ]; then
-          local I=1
-#       Box restore {{{4
-          if [ $(cat ${BACKUP} | wc -l) -le $(eval "${FLAGBOX_SIZE}") ]; then
-            while IFS= read -r LINE; do
-              FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
-              (( I+=1 ))
-            done < ${BACKUP}
-#       }}}
-#       Full restore {{{4
-          else
-            local J=1
-            unset FLAGBOX && declare -g -A FLAGBOX
-            while IFS= read -r LINE; do
-              FLAGBOX[${J},${I}]="${LINE}"
-              (( I+=1 ))
-              if [ ${I} -gt $(eval "${FLAGBOX_SIZE}") ]; then
-                (( J+=1 ))
-                I=1
-              fi
-            done < ${BACKUP}
+#     EDITION mode {{{3
+      if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
+#       Restore {{{4
+        if [ ${#CONCAT} -eq $(eval "${FLAGBOX_SIZE}") ]; then
+          if [ -f "${BACKUP}" ]; then
+            local I=1
+#         Box restore {{{5
+            if [ $(cat ${BACKUP} | wc -l) -le $(eval "${FLAGBOX_SIZE}") ]; then
+              while IFS= read -r LINE; do
+                FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
+                (( I+=1 ))
+              done < ${BACKUP}
+#         }}}
+#         Full restore {{{5
+            else
+              local J=1
+              unset FLAGBOX && declare -g -A FLAGBOX
+              while IFS= read -r LINE; do
+                FLAGBOX[${J},${I}]="${LINE}"
+                (( I+=1 ))
+                if [ ${I} -gt $(eval "${FLAGBOX_SIZE}") ]; then
+                  (( J+=1 ))
+                  I=1
+                fi
+              done < ${BACKUP}
+            fi
+#         }}}
+            ${FLAGBOX_VRESTORE} && flagbox --chain 1
+            echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
           fi
 #       }}}
-          flagbox --chain 1 \
-            && echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
-        fi
-#     }}}
-#     Save {{{3
-      else
-        if ${FLAGBOX_BACKUPCONFIRM}; then
-          [ -f ${BACKUP} ] && rm -iv ${BACKUP}
+#       Save {{{4
         else
-          [ -f ${BACKUP} ] && rm ${BACKUP}
+          if ${FLAGBOX_BACKUPCONFIRM}; then
+            [ -f ${BACKUP} ] && rm -iv ${BACKUP}
+          else
+            [ -f ${BACKUP} ] && rm ${BACKUP}
+          fi
+          local TEXT=""
+          for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
+            TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
+          done
+          printf "${TEXT}" > "${BACKUP}" \
+            && echo "${GREEN}Marks saved at:${RESET} ${BACKUP}"
         fi
-        local TEXT=""
-        for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
-          TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
-        done
-        printf "${TEXT}" > "${BACKUP}" \
-          && echo "${GREEN}Marks saved at:${RESET} ${BACKUP}"
+#       }}}
+#     }}}
+#     NAVIGATION mode {{{3
+      elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
+#       TODO
+        echo ''
       fi
 #     }}}
 #   }}}
@@ -347,21 +463,19 @@ function flagbox () {
         for I in $(seq 1 $(eval "${FLAGBOX_SIZE}")); do
           FLAGBOX[${FLAGBOX[BOX]},${I}]=''
         done
-        ${FLAGBOX_BOXALIASES}\
-          && alias "${FLAGBOX[BOX]}"="FLAGBOX[BOX]=${FLAGBOX[BOX]} && flagbox --chain 1"
       else
         FLAGBOX[BOX]=1
       fi
       FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
         | sort -n -r | head -n 1)
-      flagbox --chain 1
+      ${FLAGBOX_VNAV} && flagbox --chain 1
     elif [ "${CHAIN}" == "10" ]; then
       if [ ${FLAGBOX[BOX]} -gt 1 ]; then
         (( FLAGBOX[BOX]-=1 ))
       else
         FLAGBOX[BOX]=${FLAGBOX[MAX]}
       fi
-      flagbox --chain 1
+      ${FLAGBOX_VNAV} && flagbox --chain 1
     fi
 
 #   }}}
@@ -372,6 +486,6 @@ function flagbox () {
 [ -f "${HOME}/.flagbox.conf" ] && source "${HOME}/.flagbox.conf"
 if [ ! -f "${HOME}/.flagbox.conf" ]; then
   flagbox --alias
-elif [ -v FLAGBOX_FLAGALIASES ] && ${FLAGBOX_FLAGALIASES}; then
+elif [ -v FLAGBOX_ALIASES ] && ${FLAGBOX_ALIASES}; then
   flagbox --alias
 fi

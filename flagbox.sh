@@ -285,7 +285,7 @@ function flagbox () {
     done
 
     for I in ${BIN[@]}; do
-      if [ "x$(echo "${I}" | sed 's/0//g')" != "x" ]; then
+      if [ ${I} -gt 0 ]; then
         local NAME="$(echo "${I}" | sed "s/0/${FLAGBOX_FLAG_SYMB}/g;\
           s/1/${FLAGBOX_ACTION_SYMB}/g")"
         alias "${NAME}"="flagbox --chain ${I}"
@@ -302,18 +302,48 @@ function flagbox () {
 # }}}
   else
 # --chain {{{1
-#   Trigger-flag chain {{{2
+#   Trigger-flag chains {{{2
 
     if [ ${CHAIN} -eq 0 ]; then
 #     EDITION mode {{{3
       if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
         if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
           FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-          ${FLAGBOX_VINSERT} && flagbox --chain 1
+          if ${FLAGBOX_LESSOUTPUT}; then
+            ${FLAGBOX_VINSERT} && flagbox --chain 1 | less -R +g
+          else
+            ${FLAGBOX_VINSERT} && flagbox --chain 1
+          fi
         else
-          if [ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
-            FLAGBOX[MODE]="NAV"
-          # TODO: Generate aliases
+          if [ "$(realpath .)" \
+            == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+#       Enter NAVIGATION mode {{{4
+              FLAGBOX[MODE]="NAV"
+#         Unalias EDITION mode {{{5
+              eval "declare -r -a BIN=( $(printf %$(eval "${FLAGBOX_SIZE}")s \
+                | sed 's/ /{0..1}/g') )"
+              for I in ${BIN[@]}; do
+                if [ ${I} -gt 0 ]; then
+                  local NAME="$(echo "${I}" | sed "s/0/${FLAGBOX_FLAG_SYMB}/g;\
+                    s/1/${FLAGBOX_ACTION_SYMB}/g")"
+                  unalias "${NAME}"
+                fi
+              done
+#         }}}
+#         Generate NAVIGATION mode aliases {{{5
+              local LENGTH=$(echo -e "3\n$(echo \
+                | awk '{ printf("%0.f", log('"${FLAGBOX[MAX]}"')/log(2)) }')" \
+                | sort -n -r | head -n 1)
+              eval "declare -r -a BIN=( $(printf %${LENGTH}s \
+                | sed 's/ /{0..1}/g') )"
+              for I in $(seq 1 ${FLAGBOX[MAX]}); do
+                local NAME="$(echo "${BIN[${I}]}" \
+                  | sed "s/0/${FLAGBOX_FLAG_SYMB}/g;\
+                         s/1/${FLAGBOX_ACTION_SYMB}/g")"
+                alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
+              done
+#         }}}
+#       }}}
           else
             if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
               cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
@@ -326,8 +356,15 @@ function flagbox () {
 #     NAVIGATION mode {{{3
       elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
         if [ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+#       Enter EDITION mode {{{4
           FLAGBOX[MODE]="EDIT"
-          # TODO: Generate aliases
+#         Unalias NAVIGATION mode {{{5
+#           TODO
+#         }}}
+#         Generate EDITION mode aliases {{{5
+#           TODO
+#         }}}
+#       }}}
         else
           if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
             cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
@@ -338,7 +375,7 @@ function flagbox () {
       fi
 #     }}}
 #   }}}
-#   Reset-flag chain {{{2
+#   Binary chains {{{2
     elif [ ${#CHAIN} -eq $(eval "${FLAGBOX_SIZE}") ]; then
 #     EDITION mode {{{3
       if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
@@ -347,7 +384,11 @@ function flagbox () {
             FLAGBOX[${FLAGBOX[BOX]},${I}]=''
           fi
         done
-        ${FLAGBOX_VRESET} && flagbox --chain 1
+        if ${FLAGBOX_LESSOUTPUT}; then
+          ${FLAGBOX_VRESET} && flagbox --chain 1 | less -R +g
+        else
+          ${FLAGBOX_VRESET} && flagbox --chain 1
+        fi
 #     }}}
 #     NAVIGATION mode {{{3
       elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
@@ -384,7 +425,11 @@ function flagbox () {
                                     done; \
                                   })
       local BAR="$(printf %${BARLEN}s | tr ' ' '=')"
-      echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}"
+      if ${FLAGBOX_LESSOUTPUT}; then
+        echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}" | less -R +g
+      else
+        echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}"
+      fi
 #   }}}
 #   Backup chains {{{2
     elif [ "${CHAIN}" == "11" ]; then
@@ -423,7 +468,11 @@ function flagbox () {
               done < ${BACKUP}
             fi
 #         }}}
-            ${FLAGBOX_VRESTORE} && flagbox --chain 1
+            if ${FLAGBOX_LESSOUTPUT}; then
+              ${FLAGBOX_VRESTORE} && flagbox --chain 1 | less -R +g
+            else
+              ${FLAGBOX_VRESTORE} && flagbox --chain 1
+            fi
             echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
           fi
 #       }}}
@@ -468,14 +517,22 @@ function flagbox () {
       fi
       FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
         | sort -n -r | head -n 1)
-      ${FLAGBOX_VNAV} && flagbox --chain 1
+      if ${FLAGBOX_LESSOUTPUT}; then
+        ${FLAGBOX_VNAV} && flagbox --chain 1 | less -R +g
+      else
+        ${FLAGBOX_VNAV} && flagbox --chain 1
+      fi
     elif [ "${CHAIN}" == "10" ]; then
       if [ ${FLAGBOX[BOX]} -gt 1 ]; then
         (( FLAGBOX[BOX]-=1 ))
       else
         FLAGBOX[BOX]=${FLAGBOX[MAX]}
       fi
-      ${FLAGBOX_VNAV} && flagbox --chain 1
+      if ${FLAGBOX_LESSOUTPUT}; then
+        ${FLAGBOX_VNAV} && flagbox --chain 1 | less -R +g
+      else
+        ${FLAGBOX_VNAV} && flagbox --chain 1
+      fi
     fi
 
 #   }}}

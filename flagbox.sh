@@ -48,8 +48,6 @@ function flagbox () {
     declare -r DEFAULT_SYMB2="?"
     declare -r DEFAULT_ALIASES=true
     declare -r DEFAULT_DECIMAL_NAVMODE=false
-    declare -r DEFAULT_ALLOWINSERT_NAVMODE=false
-    declare -r DEFAULT_ALLOWNAV_EDITMODE=false
     declare -r DEFAULT_BACKUPCONFIRM=true
     declare -r DEFAULT_VINSERT=false
     declare -r DEFAULT_VNAV=true
@@ -86,18 +84,6 @@ function flagbox () {
       || [ "x$(printf "${FLAGBOX_DECIMAL_NAVMODE}" \
         | tr -d '[[:space:]]')" == "x" ]; then
           FLAGBOX_DECIMAL_NAVMODE=${DEFAULT_DECIMAL_NAVMODE}
-    fi
-
-    if [ ! -v FLAGBOX_ALLOWINSERT_NAVMODE ] \
-      || [ "x$(printf "${FLAGBOX_ALLOWINSERT_NAVMODE}" \
-        | tr -d '[[:space:]]')" == "x" ]; then
-          FLAGBOX_ALLOWINSERT_NAVMODE=${DEFAULT_ALLOWINSERT_NAVMODE}
-    fi
-
-    if [ ! -v FLAGBOX_ALLOWNAV_EDITMODE ] \
-      || [ "x$(printf "${FLAGBOX_ALLOWNAV_EDITMODE}" \
-        | tr -d '[[:space:]]')" == "x" ]; then
-          FLAGBOX_ALLOWNAV_EDITMODE=${DEFAULT_ALLOWNAV_EDITMODE}
     fi
 
     if [ ! -v FLAGBOX_BACKUPCONFIRM ] \
@@ -245,18 +231,6 @@ function flagbox () {
     if [ "${FLAGBOX_DECIMAL_NAVMODE}" != "false" ] \
       && [ "${FLAGBOX_DECIMAL_NAVMODE}" != "true" ]; then
         echo "${RED}FLAGBOX_DECIMAL_NAVMODE should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
-    fi
-
-    if [ "${FLAGBOX_ALLOWINSERT_NAVMODE}" != "false" ] \
-      && [ "${FLAGBOX_ALLOWINSERT_NAVMODE}" != "true" ]; then
-        echo "${RED}FLAGBOX_ALLOWINSERT_NAVMODE should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
-    fi
-
-    if [ "${FLAGBOX_ALLOWNAV_EDITMODE}" != "false" ] \
-      && [ "${FLAGBOX_ALLOWNAV_EDITMODE}" != "true" ]; then
-        echo "${RED}FLAGBOX_ALLOWNAV_EDITMODE should be ${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
@@ -428,10 +402,8 @@ function flagbox () {
 
       elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
         if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
-          if ${FLAGBOX_ALLOWINSERT_NAVMODE}; then
-            FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-            ${FLAGBOX_VINSERT} && flagbox --chain 1
-          fi
+          FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
+          ${FLAGBOX_VINSERT} && flagbox --chain 1
         else
           if [ "$(realpath .)" \
             == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
@@ -490,6 +462,7 @@ function flagbox () {
 #   Binary chains {{{2
 
     elif [ ${#CHAIN} -eq ${FLAGBOX_SIZE} ]; then
+      local DECIMAL=1
 
 #     EDITION mode {{{3
 
@@ -505,9 +478,13 @@ function flagbox () {
 #     NAVIGATION mode {{{3
 
       elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
-#       TODO
-        echo ''
+        DECIMAL=$(( 2#${CHAIN} ))
+        if [ ${DECIMAL} -gt 0 ] && [ ${DECIMAL} -le ${FLAGBOX[MAX]} ]; then
+          FLAGBOX[BOX] = ${DECIMAL}
+        fi
       fi
+
+      unset DECIMAL
 
 #     }}}
 #   List-flags chain {{{2
@@ -648,35 +625,31 @@ function flagbox () {
 #   Navigation chains {{{2
 
     elif [ "${CHAIN}" == "01" ]; then
-      if [ "${FLAGBOX[MODE]}" == 'NAV' ] || ${FLAGBOX_ALLOWNAV_EDITMODE}; then
-        local CONCAT=""
+      local CONCAT=""
+      for I in $(seq 1 ${FLAGBOX_SIZE}); do
+        CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+      done
+      if [ ${FLAGBOX[BOX]} -lt ${FLAGBOX[MAX]} ]; then
+        (( FLAGBOX[BOX]+=1 ))
+      elif [ ${#CONCAT} -gt ${FLAGBOX_SIZE} ]; then
+        (( FLAGBOX[BOX]+=1 ))
         for I in $(seq 1 ${FLAGBOX_SIZE}); do
-          CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+          FLAGBOX[${FLAGBOX[BOX]},${I}]=''
         done
-        if [ ${FLAGBOX[BOX]} -lt ${FLAGBOX[MAX]} ]; then
-          (( FLAGBOX[BOX]+=1 ))
-        elif [ ${#CONCAT} -gt ${FLAGBOX_SIZE} ]; then
-          (( FLAGBOX[BOX]+=1 ))
-          for I in $(seq 1 ${FLAGBOX_SIZE}); do
-            FLAGBOX[${FLAGBOX[BOX]},${I}]=''
-          done
-        else
-          FLAGBOX[BOX]=1
-        fi
-        FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
-          | sort -n -r | head -n 1)
-        unset CONCAT
-        ${FLAGBOX_VNAV} && flagbox --chain 1
+      else
+        FLAGBOX[BOX]=1
       fi
+      FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
+        | sort -n -r | head -n 1)
+      unset CONCAT
+      ${FLAGBOX_VNAV} && flagbox --chain 1
     elif [ "${CHAIN}" == "10" ]; then
-      if [ "${FLAGBOX[MODE]}" == 'NAV' ] || ${FLAGBOX_ALLOWNAV_EDITMODE}; then
-        if [ ${FLAGBOX[BOX]} -gt 1 ]; then
-          (( FLAGBOX[BOX]-=1 ))
-        else
-          FLAGBOX[BOX]=${FLAGBOX[MAX]}
-        fi
-        ${FLAGBOX_VNAV} && flagbox --chain 1
+      if [ ${FLAGBOX[BOX]} -gt 1 ]; then
+        (( FLAGBOX[BOX]-=1 ))
+      else
+        FLAGBOX[BOX]=${FLAGBOX[MAX]}
       fi
+      ${FLAGBOX_VNAV} && flagbox --chain 1
     fi
 
 #   }}}

@@ -17,6 +17,11 @@ jump it later.
 
 ### Installation
 
+1. `git clone https://github.com/pabtomas/flagbox.git`
+2. `cd flagbox/`
+3. `make install`
+4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc` or `~/.bash_profile`
+
 ### Configuration
 
 ### Contribution

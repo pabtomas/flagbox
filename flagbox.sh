@@ -497,6 +497,7 @@ function flagbox () {
       unset DECIMAL
 
 #     }}}
+#   }}}
 #   List-flags chain {{{2
 
     elif [ "${CHAIN}" == "1" ]; then
@@ -536,10 +537,10 @@ function flagbox () {
       })
       echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}"
       if ${FLAGBOX_FOLDLISTING}; then
-        echo "Press Q to continue"
+        echo "Press ? to continue"
         while true; do
           read -s -n 1 INPUT <&1
-          [ "${INPUT}" == "q" ] && break
+          [ "${INPUT}" == "?" ] && break
         done
         tput cuu $(( ${HEIGHT} + 1 )) && tput ed
       fi
@@ -602,31 +603,16 @@ function flagbox () {
 #     Save {{{3
 
       else
-
-#       EDITION mode {{{4
-
-        if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
-          if ${FLAGBOX_BACKUPCONFIRM}; then
-            [ -f ${BACKUP} ] && rm -iv ${BACKUP}
-          else
-            [ -f ${BACKUP} ] && rm ${BACKUP}
-          fi
-          for I in $(seq 1 ${FLAGBOX_SIZE}); do
-            TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
-          done
-          printf "${TEXT}" > "${BACKUP}" \
-            && echo "${GREEN}Marks saved at:${RESET} ${BACKUP}"
-
-#       }}}
-#       NAVIGATION mode {{{4
-
-        elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
-#         TODO
-          echo ''
+        if ${FLAGBOX_BACKUPCONFIRM}; then
+          [ -f ${BACKUP} ] && rm -iv ${BACKUP}
+        else
+          [ -f ${BACKUP} ] && rm ${BACKUP}
         fi
-
-#       }}}
-
+        for I in $(seq 1 ${FLAGBOX_SIZE}); do
+          TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
+        done
+        printf "${TEXT}" > "${BACKUP}" \
+          && echo "${GREEN}Box marks saved at:${RESET} ${BACKUP}"
       fi
 
 #     }}}

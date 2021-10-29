@@ -344,15 +344,16 @@ function flagbox () {
       local NAME=""
       local LENGTH=0
 
+      if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
+        FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
+        ${FLAGBOX_VINSERT} && flagbox --chain 1
+      else
+        if [ "$(realpath .)" \
+          == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+
 #     EDITION mode {{{3
 
-      if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
-        if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
-          FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-          ${FLAGBOX_VINSERT} && flagbox --chain 1
-        else
-          if [ "$(realpath .)" \
-            == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+            if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
 
 #       Enter NAVIGATION mode {{{4
 
@@ -389,32 +390,19 @@ function flagbox () {
                   FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
                 done
                 unset BIN
-              fi
 
 #         }}}
+
+              fi
+
 #       }}}
 
               echo "NAVIGATION${GREEN} mode used${RESET}"
 
-          else
-            if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
-              cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
-            else
-              echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
-            fi
-          fi
-        fi
-
 #     }}}
 #     NAVIGATION mode {{{3
 
-      elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
-        if [ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]; then
-          FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-          ${FLAGBOX_VINSERT} && flagbox --chain 1
-        else
-          if [ "$(realpath .)" \
-            == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]; then
+            elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
 
 #       Enter EDITION mode {{{4
 
@@ -447,24 +435,26 @@ function flagbox () {
                   fi
                 done
                 unset BIN
-              fi
 
 #         }}}
+
+              fi
+
 #       }}}
 
               echo "EDITION${GREEN} mode used${RESET}"
-
-          else
-            if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
-              cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
-            else
-              echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
             fi
+
+#     }}}
+
+        else
+          if [ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]; then
+            cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
+          else
+            echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
           fi
         fi
       fi
-
-#     }}}
 
       unset LENGTH NAME
 

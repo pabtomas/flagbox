@@ -19,7 +19,7 @@ jump it later.
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
 2. `cd flagbox/`
-3. `make install`
+3. `cp flagbox.sh ${HOME}/.local/bin/`
 4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc` or `~/.bash_profile`
 
 ### Configuration

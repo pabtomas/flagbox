@@ -309,25 +309,27 @@ function flagbox () {
 
 #   Generate aliases {{{2
 
-    for I in $(seq 1 ${FLAGBOX_SIZE}); do
-      NAME="$(printf %${I}s | tr ' ' "${FLAGBOX_SYMB1}")"
-      alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
-    done
+    if ${FLAGBOX_ALIASES}; then
+      for I in $(seq 1 ${FLAGBOX_SIZE}); do
+        NAME="$(printf %${I}s | tr ' ' "${FLAGBOX_SYMB1}")"
+        alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
+      done
 
-    for I in ${BIN[@]}; do
-      if [ ${I} -gt 0 ]; then
-        NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
-          | tr '1' "${FLAGBOX_SYMB2}")"
-        alias "${NAME}"="flagbox --chain ${I}"
-        FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
-      fi
-    done
+      for I in ${BIN[@]}; do
+        if [ ${I} -gt 0 ]; then
+          NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+            | tr '1' "${FLAGBOX_SYMB2}")"
+          alias "${NAME}"="flagbox --chain ${I}"
+          FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+        fi
+      done
 
-    alias "${FLAGBOX_SYMB2}"="flagbox --chain 1"
-    alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"="flagbox --chain 11"
+      alias "${FLAGBOX_SYMB2}"="flagbox --chain 1"
+      alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"="flagbox --chain 11"
 
-    alias "${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"="flagbox --chain 01"
-    alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"="flagbox --chain 10"
+      alias "${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"="flagbox --chain 01"
+      alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"="flagbox --chain 10"
+    fi
 
 #   }}}
 
@@ -356,36 +358,38 @@ function flagbox () {
 
               FLAGBOX[MODE]="NAV"
 
-              for I in ${FLAGBOX[ALIAS]}; do
-                unalias "${I}"
-              done
-              unset FLAGBOX[ALIAS]
+              if ${FLAGBOX_ALIASES}; then
+                for I in ${FLAGBOX[ALIAS]}; do
+                  unalias "${I}"
+                done
+                unset FLAGBOX[ALIAS]
 
 #         Generate NAVIGATION mode aliases {{{5
 
-              LENGTH=$(echo -e "3\n$(echo \
-                | awk '{ printf("%0.f", log('"${FLAGBOX[MAX]}"')/log(2)) }')" \
-                | sort -n -r | head -n 1)
-              declare -a BIN=( $(I=0; \
-                while true; do \
-                  J="$(perl -e 'printf("%b\n",'${I}')')"; \
-                  if [ ${#J} -gt ${LENGTH} ]; then \
-                    break; \
-                  fi; \
-                  echo "$(printf %$(( ${LENGTH} - ${#J} ))s | tr ' ' '0')$J"; \
-                  (( I+=1 )); \
-                done) )
-              for I in $(seq 1 ${FLAGBOX[MAX]}); do
-                if ${FLAGBOX_DECIMAL_NAVMODE}; then
-                  NAME="${I}"
-                else
-                  NAME="$(printf "${BIN[${I}]}" | tr '0' "${FLAGBOX_SYMB1}" \
-                    | tr '1' "${FLAGBOX_SYMB2}")"
-                fi
-                alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
-                FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
-              done
-              unset BIN
+                LENGTH=$(echo -e "3\n$(echo \
+                  | awk '{ printf("%0.f", log('"${FLAGBOX[MAX]}"')/log(2)) }')" \
+                  | sort -n -r | head -n 1)
+                declare -a BIN=( $(I=0; \
+                  while true; do \
+                    J="$(perl -e 'printf("%b\n",'${I}')')"; \
+                    if [ ${#J} -gt ${LENGTH} ]; then \
+                      break; \
+                    fi; \
+                    echo "$(printf %$(( ${LENGTH} - ${#J} ))s | tr ' ' '0')$J"; \
+                    (( I+=1 )); \
+                  done) )
+                for I in $(seq 1 ${FLAGBOX[MAX]}); do
+                  if ${FLAGBOX_DECIMAL_NAVMODE}; then
+                    NAME="${I}"
+                  else
+                    NAME="$(printf "${BIN[${I}]}" | tr '0' "${FLAGBOX_SYMB1}" \
+                      | tr '1' "${FLAGBOX_SYMB2}")"
+                  fi
+                  alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
+                  FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                done
+                unset BIN
+              fi
 
 #         }}}
 #       }}}
@@ -416,32 +420,34 @@ function flagbox () {
 
               FLAGBOX[MODE]="EDIT"
 
-              for I in ${FLAGBOX[ALIAS]}; do
-                unalias "${I}"
-              done
-              unset FLAGBOX[ALIAS]
+              if ${FLAGBOX_ALIASES}; then
+                for I in ${FLAGBOX[ALIAS]}; do
+                  unalias "${I}"
+                done
+                unset FLAGBOX[ALIAS]
 
 #         Generate EDITION mode aliases {{{5
 
-              declare -a BIN=( $(I=0; \
-                while true; do \
-                  J="$(perl -e 'printf("%b\n",'${I}')')"; \
-                  if [ ${#J} -gt ${FLAGBOX_SIZE} ]; then \
-                    break; \
-                  fi; \
-                  echo "$(printf %$(( ${FLAGBOX_SIZE} - ${#J} ))s \
-                    | tr ' ' '0')$J"; \
-                  (( I+=1 )); \
-                done) )
-              for I in ${BIN[@]}; do
-                if [ ${I} -gt 0 ]; then
-                  NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
-                    | tr '1' "${FLAGBOX_SYMB2}")"
-                  alias "${NAME}"="flagbox --chain ${I}"
-                  FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
-                fi
-              done
-              unset BIN
+                declare -a BIN=( $(I=0; \
+                  while true; do \
+                    J="$(perl -e 'printf("%b\n",'${I}')')"; \
+                    if [ ${#J} -gt ${FLAGBOX_SIZE} ]; then \
+                      break; \
+                    fi; \
+                    echo "$(printf %$(( ${FLAGBOX_SIZE} - ${#J} ))s \
+                      | tr ' ' '0')$J"; \
+                    (( I+=1 )); \
+                  done) )
+                for I in ${BIN[@]}; do
+                  if [ ${I} -gt 0 ]; then
+                    NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+                      | tr '1' "${FLAGBOX_SYMB2}")"
+                    alias "${NAME}"="flagbox --chain ${I}"
+                    FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                  fi
+                done
+                unset BIN
+              fi
 
 #         }}}
 #       }}}

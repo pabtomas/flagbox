@@ -647,8 +647,4 @@ function flagbox () {
 }
 
 [ -f "${HOME}/.flagbox.conf" ] && source "${HOME}/.flagbox.conf"
-if [ ! -f "${HOME}/.flagbox.conf" ]; then
-  flagbox --source
-elif [ -v FLAGBOX_ALIASES ] && ${FLAGBOX_ALIASES}; then
-  flagbox --source
-fi
+flagbox --source

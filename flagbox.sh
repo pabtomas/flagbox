@@ -376,8 +376,12 @@ function flagbox () {
                   (( I+=1 )); \
                 done) )
               for I in $(seq 1 ${FLAGBOX[MAX]}); do
-                NAME="$(printf "${BIN[${I}]}" | tr '0' "${FLAGBOX_SYMB1}" \
-                  | tr '1' "${FLAGBOX_SYMB2}")"
+                if ${FLAGBOX_DECIMAL_NAVMODE}; then
+                  NAME="${I}"
+                else
+                  NAME="$(printf "${BIN[${I}]}" | tr '0' "${FLAGBOX_SYMB1}" \
+                    | tr '1' "${FLAGBOX_SYMB2}")"
+                fi
                 alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
                 FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
               done
@@ -551,51 +555,51 @@ function flagbox () {
         BACKUP="$(realpath ${FILE})"
       fi
 
-#     EDITION mode {{{3
+#     Restore {{{3
 
-      if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
+      if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
+        if [ -f "${BACKUP}" ]; then
 
-#       Restore {{{4
+#       Box restore {{{4
 
-        if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
-          if [ -f "${BACKUP}" ]; then
+          if [ $(cat ${BACKUP} | wc -l) -le ${FLAGBOX_SIZE} ]; then
+            while IFS= read -r LINE; do
+              FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
+              (( I+=1 ))
+            done < ${BACKUP}
 
-#         Box restore {{{5
+#       }}}
+#       Full restore {{{4
 
-            if [ $(cat ${BACKUP} | wc -l) -le ${FLAGBOX_SIZE} ]; then
-              while IFS= read -r LINE; do
-                FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
-                (( I+=1 ))
-              done < ${BACKUP}
-
-#         }}}
-#         Full restore {{{5
-
-            else
-              unset FLAGBOX && declare -g -A FLAGBOX
-              FLAGBOX[BOX]=1
-              FLAGBOX[MAX]=1
-              FLAGBOX[MODE]="EDIT"
-              while IFS= read -r LINE; do
-                FLAGBOX[${J},${I}]="${LINE}"
-                (( I+=1 ))
-                if [ ${I} -gt ${FLAGBOX_SIZE} ]; then
-                  (( J+=1 ))
-                  I=1
-                fi
-              done < ${BACKUP}
-            fi
-
-#         }}}
-
-            echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
-            ${FLAGBOX_VRESTORE} && flagbox --chain 1
+          else
+            unset FLAGBOX && declare -g -A FLAGBOX
+            FLAGBOX[BOX]=1
+            FLAGBOX[MAX]=1
+            FLAGBOX[MODE]="EDIT"
+            while IFS= read -r LINE; do
+              FLAGBOX[${J},${I}]="${LINE}"
+              (( I+=1 ))
+              if [ ${I} -gt ${FLAGBOX_SIZE} ]; then
+                (( J+=1 ))
+                I=1
+              fi
+            done < ${BACKUP}
           fi
 
 #       }}}
-#       Save {{{4
 
-        else
+          echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
+          ${FLAGBOX_VRESTORE} && flagbox --chain 1
+        fi
+
+#     }}}
+#     Save {{{3
+
+      else
+
+#       EDITION mode {{{4
+
+        if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
           if ${FLAGBOX_BACKUPCONFIRM}; then
             [ -f ${BACKUP} ] && rm -iv ${BACKUP}
           else
@@ -606,15 +610,17 @@ function flagbox () {
           done
           printf "${TEXT}" > "${BACKUP}" \
             && echo "${GREEN}Marks saved at:${RESET} ${BACKUP}"
+
+#       }}}
+#       NAVIGATION mode {{{4
+
+        elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
+#         TODO
+          echo ''
         fi
 
 #       }}}
-#     }}}
-#     NAVIGATION mode {{{3
 
-      elif [ "${FLAGBOX[MODE]}" == "NAV" ]; then
-#       TODO
-        echo ''
       fi
 
 #     }}}

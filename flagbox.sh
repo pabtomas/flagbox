@@ -54,7 +54,6 @@ function flagbox () {
     declare -r DEFAULT_VRESET=false
     declare -r DEFAULT_VRESTORE=true
     declare -r DEFAULT_FOLDLISTING=false
-    declare -r DEFAULT_STACKBOX=false
     declare -r DEFAULT_AUTOWRITE=false
     declare -r DEFAULT_AUTOWRITEFILE="${HOME}/.flagbox_autowrite"
     declare -r DEFAULT_AUTORESTORE=false
@@ -115,11 +114,6 @@ function flagbox () {
     if [ ! -v FLAGBOX_FOLDLISTING ] || [ "x$(printf "${FLAGBOX_FOLDLISTING}" \
       | tr -d '[[:space:]]')" == "x" ]; then
         FLAGBOX_FOLDLISTING=${DEFAULT_FOLDLISTING}
-    fi
-
-    if [ ! -v FLAGBOX_STACKBOX ] || [ "x$(printf "${FLAGBOX_STACKBOX}" \
-      | tr -d '[[:space:]]')" == "x" ]; then
-        FLAGBOX_STACKBOX=${DEFAULT_STACKBOX}
     fi
 
     if [ ! -v FLAGBOX_AUTOWRITE ] || [ "x$(printf "${FLAGBOX_AUTOWRITE}" \
@@ -214,12 +208,6 @@ function flagbox () {
 
     if [ ${#DUP} -gt 0 ]; then
       echo -e "${YELLOW}Your are highly discouraged to use those characters for FLAGBOX_SYMB1 and FLAGBOX_SYMB2. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
-    fi
-
-    if [ "${FLAGBOX_STACKBOX}" != "false" ] \
-      && [ "${FLAGBOX_STACKBOX}" != "true" ]; then
-        echo "${RED}FLAGBOX_STACKBOX should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
     fi
 
     if [ "${FLAGBOX_ALIASES}" != "false" ] \

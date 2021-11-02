@@ -1,11 +1,11 @@
-## Documentation
+# Documentation
 
 If you have not read the README.md file of this repository, read it to
 understand how to use flagbox for a basic usage. In this document we are going
 to talk about flagbox's advanced features and I assume that you have a bit of
 practice with flagbox.
 
-### Advanced features
+## Advanced features
 
 Probably the most useful of them is the ability to make a backup of the
 current box and restore it later. Suppose you have a first terminal. You play
@@ -50,4 +50,4 @@ not recommend to use a box size higher than 4 if you want to keep an efficient
 usage of flagbox. But what if you want to use more than 4 flags and keep a
 recommend usage of flagbox.
 
-### Configuration
+## Configuration

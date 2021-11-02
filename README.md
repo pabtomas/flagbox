@@ -1,6 +1,4 @@
-## flagbox
-
-A 2-keys marks manager for Bash
+# flagbox - A 2-keys marks manager for Bash
 
 <img src="/media/weirdcommands.png">
 
@@ -15,7 +13,7 @@ this README. Most of them inspired the creation of flagbox.
 flagbox is a mark manager. It allows you to save the directory you are in and
 jump it later.
 
-### Basic usage
+## Basic usage
 
 Saving a directory is easy. If your flagbox settings are default settings, when
 you launch your terminal you have an empty box. Type `?` to see your current
@@ -56,16 +54,16 @@ marks you defined, you have enough background for a basic usage of this tool.
 If you can to learn more about advanced features, you can read the
 DOCUMENTATION.md file on this repository.
 
-### Installation
+## Installation
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
 2. `cd flagbox/`
 3. `cp flagbox.sh ${HOME}/.local/bin/`
 4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc` or `~/.bash_profile`
 
-### Contribution
+## Contribution
 
-### Credit
+## Credit
 
 https://github.com/huyng/bashmarks
 https://github.com/twerth/bashmarks

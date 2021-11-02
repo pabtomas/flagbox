@@ -1,4 +1,4 @@
-# flagbox - A 2-keys marks manager for Bash
+# flagbox - a 2-keys marks manager for Bash
 
 <img src="/media/weirdcommands.png">
 

@@ -3,7 +3,7 @@
 If you have not read the
 [README file](https://github.com/pabtomas/flagbox/blob/master/README.md) of
 this repository, read it to understand how to use *Flagbox* for a basic usage.
-In this document we are going to talk about *Flagbox*'s advanced features and
+In this document I am going to talk about *Flagbox*'s advanced features and
 I assume that you have a bit of practice with *Flagbox*.
 
 ## Backup feature
@@ -14,26 +14,31 @@ terminal and use marks defined in the first terminal without doing the job a
 second time? *Flagbox* generates the `??` alias for this purpose. The `??`
 usage is simple: if the current box you are using is empty, *Flagbox* will
 search for a default backup and restore it. Otherwise, *Flagbox* will generate
-a backup. For the use case we define earlier, the solution is simple:
-1) In the first terminal, the current box of the user is not empty, so the
-user can use `??` alias to generate a backup with box used in this terminal.
-2) In the second terminal, the box used is empty so the user can use `??`
-alias again to change its content to the box saved in backup. And that's it,
-the user can now use two different boxes with the same content in
-two different terminals.
+a backup. For the use case I defined earlier, the solution is simple:
+1) In the first terminal, your current box is not empty, so you can use `??`
+alias to generate a backup with box used in this terminal.
+2) In the second terminal, the box used is empty so you can use `??` alias
+again to change its content to the box saved in backup. And that's it, now you
+can use two different boxes with the same content in two different terminals.
 
 Even if `??` alias seems very unusual, this command has a very flexible usage.
-Here 2 other situations where `??` alias will be the solution:
-- The user has an opened terminal with a full-filled box. For system reasons,
-the user has to restart his laptop. To not lose the box content, the user can
-use `??` alias to make a backup, restart the system and reuse `??` to get the
-content of his box back.
-- The user has an opened terminal with a full-filled box. For some reasons,
-the user needs to define new marks for short-term usage without loosing his
-current box content but does not have enough empty marks for his use case.
-The user can use `??` alias to make a backup, make some modifications on his
-box, use the box for his use case, erase totally the content of the box with
-`???` alias and then reuse `??` to get the content of his box back.
+Here 2 other situations where `??` alias can save you:
+- You have an opened terminal with a full-filled box. For system reasons, you
+have to restart your laptop. To keep your box content, you can:
+1. use `??` alias to make a backup,
+2. restart the system,
+3. reuse `??` to get the content of your box back.
+
+- You have an opened terminal with a filled box. For some reasons, you need to
+define new marks for short-term usage without loosing your current box
+content. However your box does not have enough empty space to keep your
+current box content and define new marks. To solve this situation, you can:
+1. use `??` alias to make a backup,
+2. empty space in your current box,
+3. define your short-term marks,
+4. use your newly created marks,
+5. empty your box again with `???` alias,
+6. reuse `??` to get the content of your box back.
 
 `??` alias can take an optional argument. If you need to keep the default
 backup for another marks you can define your own backup by adding a parameter:

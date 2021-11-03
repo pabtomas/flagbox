@@ -26,24 +26,24 @@ Here 2 other situations where `??` alias can save you:
 <ul>
   <li> You have an opened terminal with a full-filled box. For system reasons, you
 have to restart your laptop. To keep your box content, you can:
-    <ol>
-      <li> use `??` alias to make a backup, </li>
-      <li> restart the system, </li>
-      <li> reuse `??` to get the content of your box back. </li>
-    </ol>
+    <ul>
+      <li> 1. use `??` alias to make a backup, </li>
+      <li> 2. restart the system, </li>
+      <li> 3. reuse `??` to get the content of your box back. </li>
+    </ul>
   </li>
   <li>You have an opened terminal with a filled box. For some reasons, you need to
 define new marks for short-term usage without loosing your current box
 content. However your box does not have enough empty space to keep your
 current box content and define new marks. To solve this situation, you can:
-    <ol>
-      <li> use `??` alias to make a backup, </li>
-      <li> empty space in your current box, </li>
-      <li> define your short-term marks, </li>
-      <li> use your newly created marks, </li>
-      <li> empty your box with full question mark alias, </li>
-      <li> reuse `??` to get the content of your box back. </li>
-    </ol>
+    <ul>
+      <li> 1. use `??` alias to make a backup,
+      <li> 2. empty space in your current box,
+      <li> 3. define your short-term marks,
+      <li> 4. use your newly created marks,
+      <li> 5. empty your box with full question mark alias,
+      <li> 6. reuse `??` to get the content of your box back.
+    </ul>
   </li>
 </ul>
 

@@ -41,7 +41,7 @@ You can change this setting in your `.flagbox.conf` file.
 
 What now if you want to erase a mark that you will not use anymore ? *flagbox*
 generates resetting aliases for this purpose. Suppose that your current box is
-builded with the following content:
+built with the following content:
 
 </br>
 <img src="/media/fullfilledbox.png">
@@ -50,9 +50,12 @@ builded with the following content:
 Resetting a mark is a bit tricky but really easy to use when you understand
 the mechanism. To reset a mark you have to build a string composed with `?`
 and `,` characters. A comma means 'keep the matched mark' and a `?` means
-'reset the matched mark'. For the above box, if you type: `?,?` you will
-reset `,` mark, keep `,,` mark and reset `,,,` marks because for the first and
-third string's indexes, you placed `?` characters.
+'reset the matched mark'. For the above box, if you type: `?,?` you will:
+1. reset `,` mark,
+2. keep `,,` mark,
+3. and reset `,,,` marks
+Why ? Because for the first and third alias' indexes, you placed `?`
+characters.
 
 </br>
 <img src="/media/chain101.png">
@@ -60,13 +63,13 @@ third string's indexes, you placed `?` characters.
 
 Now that you know how to save a directory, delete a mark, use a mark and list
 marks you defined, you have enough background for a basic usage of this tool.
-If you can to learn more about advanced features, you can read the
+If you want to learn more about advanced features, you can read the
 [documentation](https://github.com/pabtomas/flagbox/blob/master/DOCUMENTATION.md)
 
 ## Installation
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
-2. `mkdir -p ${HOME}/.local/bin/"
+2. `mkdir -p ${HOME}/.local/bin/`
 3. `cp flagbox/flagbox.sh ${HOME}/.local/bin/`
 4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc`
 5. `source ~/.bashrc`

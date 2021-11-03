@@ -50,12 +50,12 @@ annoying by typing 15 times a comma than typing
 
 For this reason, I could not guarantee an efficient *flagbox* usage if your
 box size is higher than 4 flags. To allow you to keep an efficient *flagbox*
-usage without blocking you with only 4 flags, *flagbox* allows you to build a
-new box by defining `,?` and `?,` aliases. These aliases allow you to go to
-next or previous box cyclicly. If your current box is not empty and is the
-last in your cycle, going to the next box will build a new one. Building a new
-box, keep the marks you defined in other boxes and allows you to use same
-aliases for different directories you want to save.
+usage without blocking you with only 4 flags, *flagbox* defines `,?` and `?,`
+aliases. These aliases allow you to go to next or previous box cyclicly. If
+your current box is not empty and is the last in your cycle, going to the next
+box will build a new one. Building a new box, keep the marks you defined in
+other boxes and allows you to use same aliases for different directories you
+want to save.
 
 Suppose we have a current lonely and empty box. Using `,?` alias will not
 create a new box because its empty. We have to fill it with an alias.

@@ -6,28 +6,28 @@
 
 Did you ever see those typed commands in a terminal ? Whatever your answer, I
 am convinced that you find it ambiguous and not friendly-user. You are right:
-flagbox was not conceived with friendly-usage in mind. It was conceived for
+*flagbox* was not conceived with friendly-usage in mind. It was conceived for
 efficiency. For this purpose friendly-user aspect was not a priority during
-flagbox conception. If you are searching a tool which allows you to make a
+*flagbox* conception. If you are searching a tool which allows you to make a
 similar job with a more friendly usage, you can go to the Credit section of
-this README. Most of them inspired the creation of flagbox.
+this README. Most of them inspired the creation of *flagbox*.
 
-flagbox is a mark manager. It allows you to save the directory you are in and
-jump it later.
+*flagbox* is a mark manager. It allows you to save the directory you are in
+and jump it later.
 
 ## Basic usage
 
-Saving a directory is easy. If your flagbox settings are default settings, when
-you launch your terminal you have an empty box. Type `?` to see your current
-box content:
+Saving a directory is easy. If your *flagbox* settings are default settings,
+when you launch your terminal you have an empty box. Type `?` to see your
+current box content:
 
 </br>
 <img src="/media/chain1.png">
 </br>
 
-Here flagbox is saying that your current box is empty. After entering `,` and
-typing `?` again, you can easily understand that the `,` mark is used for the
-directory where you used `,`.
+Here *flagbox* is saying that your current box is empty. After entering `,`
+and typing `?` again, you can easily understand that the `,` mark is used for
+the directory where you used `,`.
 
 </br>
 <img src="/media/chain0.png">
@@ -35,12 +35,11 @@ directory where you used `,`.
 
 Now if you are changing directory (exemple: `/tmp` directory), and you type
 `,`, you will come-back to the directory pointed by `,` mark. Full commas
-aliases are used by flagbox to allow you to save directory and jump it later.
+aliases are used by *flagbox* to allow you to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
-You can change this setting in your `.flagbox.conf` file. We will talk about
-flagbox configuration in the DOCUMENTATION.md file of this repository.
+You can change this setting in your `.flagbox.conf` file.
 
-What now if you want to erase a mark that you will not use anymore ? flagbox
+What now if you want to erase a mark that you will not use anymore ? *flagbox*
 generates resetting aliases for this purpose. Suppose that your current box is
 builded with the following content:
 
@@ -62,18 +61,22 @@ third string's indexes, you place `?` characters.
 Now that you know how to save a directory, delete a mark, use a mark and list
 marks you defined, you have enough background for a basic usage of this tool.
 If you can to learn more about advanced features, you can read the
-DOCUMENTATION.md file on this repository.
+[documentation](https://github.com/pabtomas/flagbox/blob/master/DOCUMENTATION.md)
 
 ## Installation
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
-2. `cd flagbox/`
-3. `cp flagbox.sh ${HOME}/.local/bin/`
-4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc` or `~/.bash_profile`
+2. `mkdir -p ${HOME}/.local/bin/"
+3. `cp flagbox/flagbox.sh ${HOME}/.local/bin/`
+4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc`
+5. `source ~/.bashrc`
 
 ## Contribution
 
+I would be very grateful for anybody wanting to contribute anything. Here are
+the [instructions](https://github.com/pabtomas/flagbox/blob/master/CONTRIBUTING.md).
+
 ## Credit
 
-https://github.com/huyng/bashmarks
-https://github.com/twerth/bashmarks
+- [huyng's bashmarks](https://github.com/huyng/bashmarks)
+- [twerth's bashmarks](https://github.com/twerth/bashmarks)

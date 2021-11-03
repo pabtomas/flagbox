@@ -45,15 +45,17 @@ The main problem of *flagbox* is its box size limitation. In deed, even if you
 can put a large number for your box size (10, 15, 50 or why not 315204?), you
 will find quickly by yourself that navigating in your workspace will be more
 annoying by typing 15 times a comma than typing
-`cd /the/path/to/your/directory`. For this reason, I could not guarantee an
-efficient *flagbox* usage if your box size is higher than 4 flags. To allow
-you to keep an efficient *flagbox* usage without blocking you with only 4
-flags, *flagbox* allows you to build a new box by defining `,?` and `?,`
-aliases. These aliases allow you to go to next or previous box cyclicly.
-If your current box is not empty and is the last in your cycle, going to the
-next box will build a new one. Building a new box, keep the marks you defined
-in other boxes and allows you to use same aliases for different directories
-you want to save.
+`cd /the/path/to/your/directory`.
+
+For this reason, I could not guarantee an efficient *flagbox* usage if your
+box size is higher than 4 flags. To allow you to keep an efficient *flagbox*
+usage without blocking you with only 4 flags, *flagbox* allows you to build a
+new box by defining `,?` and `?,` aliases. These aliases allow you to go to
+next or previous box cyclicly. If your current box is not empty and is the
+last in your cycle, going to the next box will build a new one. Building a new
+box, keep the marks you defined in other boxes and allows you to use same
+aliases for different directories you want to save.
+
 Suppose we have a current lonely and empty box. Using `,?` alias will not
 create a new box because its empty. We have to fill it with an alias.
 

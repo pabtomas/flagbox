@@ -37,12 +37,12 @@ define new marks for short-term usage without loosing your current box
 content. However your box does not have enough empty space to keep your
 current box content and define new marks. To solve this situation, you can:
     <ul>
-      <li> 1. use `??` alias to make a backup,
-      <li> 2. empty space in your current box,
-      <li> 3. define your short-term marks,
-      <li> 4. use your newly created marks,
-      <li> 5. empty your box with full question mark alias,
-      <li> 6. reuse `??` to get the content of your box back.
+      <li> 1. use `??` alias to make a backup, </li>
+      <li> 2. empty space in your current box, </li>
+      <li> 3. define your short-term marks, </li>
+      <li> 4. use your newly created marks, </li>
+      <li> 5. empty your box with full question mark alias, </li>
+      <li> 6. reuse `??` to get the content of your box back. </li>
     </ul>
   </li>
 </ul>

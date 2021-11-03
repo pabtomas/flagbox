@@ -1,10 +1,10 @@
 # Documentation
 
 If you have not read the
-[README file](https://github.com/pabtomas/flagbox/blob/master/README.md) of
-this repository, read it to understand how to use *Flagbox* for a basic usage.
-In this document I am going to talk about *Flagbox*'s advanced features and
-I assume that you have a bit of practice with *Flagbox*.
+[README file](https://github.com/pabtomas/flagbox/blob/master/README.md), read
+it to understand how to use *Flagbox* for a basic usage. In this document, I
+am going to talk about *Flagbox*'s advanced features and I assume that you
+have a bit of practice with *Flagbox*.
 
 ## Backup feature
 
@@ -12,7 +12,7 @@ Let's assume you opened a first terminal. You play with it a little bit and
 finally you filled a box full of marks. What if you want to open a second
 terminal and use marks defined in the first terminal without doing the job a
 second time? *Flagbox* generates the `??` alias for this purpose. The `??`
-usage is simple: if the current box you are using is empty, *Flagbox* will
+usage is simple: **if the current box you are using is empty**, *Flagbox* will
 search for a default backup and restore it. Otherwise, *Flagbox* will generate
 a backup. For the use case I defined earlier, the solution is simple:
 1) In the first terminal, your current box is not empty, so you can use `??`
@@ -40,7 +40,7 @@ current box content and define new marks. To solve this situation, you can:
   - empty your box with full question mark alias,
   - reuse `??` to get the content of your box back.
 
-`??` alias can take an optional argument. If you need to keep the default
+`??` **alias can take an optional argument**. If you need to keep the default
 backup for another marks you can define your own backup by adding a parameter:
 `?? myflagboxbackup`.
 
@@ -55,16 +55,16 @@ than typing
 `cd /the/path/to/your/directory`.
 
 For this reason, I could not guarantee an efficient *Flagbox* usage if your
-box size is higher than 4 flags. To allow you to keep an efficient *Flagbox*
-usage without blocking you with only 4 flags, *Flagbox* defines `,?` and `?,`
-aliases. These aliases allow you to go to next or previous box cyclicly. If
-your current box is not empty and is the last in your cycle, going to the next
-box will build a new one. Building a new box, keeps the marks you defined in
-other boxes and allows you to use same aliases for different directories you
-want to save.
+box size is higher than 4 flags. To keep an efficient usage without
+restraining it with only 4 flags, *Flagbox* defines `,?` and `?,` aliases.
+These aliases allow box navigation cyclicly. **If your current box is not
+empty and is the last in your cycle**, going to the next box will build a
+new one. Building a new box, keeps the marks you defined in other boxes and
+allows you to use same aliases for different directories you want to save.
 
 Let's assume you have a current lonely and empty box. Using `,?` alias will
-not create a new box because its empty. We have to fill it with an alias.
+not create a new box because the current one is empty. We have to fill it with
+an alias.
 
 </br>
 <img src="/media/filledbox.png">
@@ -77,11 +77,11 @@ an other directory.
 <img src="/media/2boxes.png">
 </br>
 
-With these two boxes you just have to use `,?` and `?,` to switch box and use
-`,` alias for the directory you need to go.
+With these two boxes you just have to use `,?` and `?,` to switch between them
+and use `,` alias for the directory you need to go.
 
-If you need to delete a box, you have to empty it and use the full question
-marks alias on it:
+If you need to delete a box, **you have to empty it and use the full question
+marks alias on it**:
 
 </br>
 <img src="/media/deletebox.png">

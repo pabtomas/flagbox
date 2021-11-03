@@ -27,17 +27,17 @@ current box content:
 
 Here *Flagbox* is saying that your current box is empty. After entering `,`
 and typing `?` again, you can easily understand that the `,` mark is used for
-the directory where you used `,`.
+the directory where you entered `,`.
 
 </br>
 <img src="/media/chain0.png">
 </br>
 
-Now if you are changing directory (exemple: `/tmp` directory) and typing
-`,`, you will come back to the directory pointed by `,` mark. Full commas
-aliases are used by *Flagbox* to allow you to save directory and jump it
-later. By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,`
-marks). You can change this setting in your `.flagbox.conf` file.
+Now if you are changing directory (exemple: `/tmp` directory) and you are
+typing `,`, you will come back to the directory pointed by `,` mark. **Full
+commas aliases** are used by *Flagbox* to save directory and jump it later.
+By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
+You can change this setting in your `.flagbox.conf` file.
 
 What now if you want to erase a mark that you will not use anymore? *Flagbox*
 generates resetting aliases for this purpose. Let's assume that your current
@@ -49,8 +49,9 @@ box is built with the following content:
 
 Resetting a mark is a bit tricky but really easy to use when you understand
 the mechanism. To reset a mark you have to build a string composed with `?`
-and `,` characters. A comma means 'keep the matched mark' and a `?` means
-'reset the matched mark'. For the above box, if you type: `?,?` you will:
+and `,` characters. A comma means "**keep** the matched mark" and a question
+mark means "**reset** the matched mark". For the above box, if you type: `?,?`
+you will:
 1. reset `,` mark,
 2. keep `,,` mark,
 3. and reset `,,,` marks

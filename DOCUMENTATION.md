@@ -45,6 +45,7 @@ The main problem of *flagbox* is its box size limitation. In deed, even if you
 can put a large number for your box size (10, 15, 50 or why not 315204?), you
 will find quickly by yourself that navigating in your workspace will be more
 annoying by typing 15 times a comma than typing
+
 `cd /the/path/to/your/directory`.
 
 For this reason, I could not guarantee an efficient *flagbox* usage if your

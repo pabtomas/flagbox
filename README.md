@@ -33,8 +33,8 @@ the directory where you used `,`.
 <img src="/media/chain0.png">
 </br>
 
-Now if you are changing directory (exemple: `/tmp` directory), and you type
-`,`, you will come-back to the directory pointed by `,` mark. Full commas
+Now if you are changing directory (exemple: `/tmp` directory) and typing
+`,`, you will come back to the directory pointed by `,` mark. Full commas
 aliases are used by *flagbox* to allow you to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
 You can change this setting in your `.flagbox.conf` file.
@@ -54,6 +54,7 @@ and `,` characters. A comma means 'keep the matched mark' and a `?` means
 1. reset `,` mark,
 2. keep `,,` mark,
 3. and reset `,,,` marks
+
 Why? Because for the first and third alias' indexes, you placed `?`
 characters.
 

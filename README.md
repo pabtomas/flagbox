@@ -35,13 +35,13 @@ the directory where you used `,`.
 
 Now if you are changing directory (exemple: `/tmp` directory) and typing
 `,`, you will come back to the directory pointed by `,` mark. Full commas
-aliases are used by *flagbox* to allow you to save directory and jump it later.
-By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
-You can change this setting in your `.flagbox.conf` file.
+aliases are used by *flagbox* to allow you to save directory and jump it
+later. By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,`
+marks). You can change this setting in your `.flagbox.conf` file.
 
 What now if you want to erase a mark that you will not use anymore? *flagbox*
-generates resetting aliases for this purpose. Suppose that your current box is
-built with the following content:
+generates resetting aliases for this purpose. Let's assume that your current
+box is built with the following content:
 
 </br>
 <img src="/media/fullfilledbox.png">

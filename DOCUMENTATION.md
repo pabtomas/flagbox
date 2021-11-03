@@ -8,13 +8,13 @@ I assume that you have a bit of practice with *flagbox*.
 
 ## Backup feature
 
-Suppose you opened a first terminal. You play with it a little bit and finally
-you filled a box full of marks. What if you want to open a second terminal and
-use marks defined is the first terminal without doing the job all again?
-*flagbox* generates the `??` alias for this purpose. The `??` usage is simple:
-if the current box you are using is empty, *flagbox* will search for a default
-backup and restore it. Otherwise, *flagbox* will generate a backup. For the
-use case we define earlier, the solution is simple:
+Let's assume you opened a first terminal. You play with it a little bit and
+finally you filled a box full of marks. What if you want to open a second
+terminal and use marks defined is the first terminal without doing the job all
+again? *flagbox* generates the `??` alias for this purpose. The `??` usage is
+simple: if the current box you are using is empty, *flagbox* will search for a
+default backup and restore it. Otherwise, *flagbox* will generate a backup.
+For the use case we define earlier, the solution is simple:
 1) In the first terminal, the current box of the user is not empty, so the
 user can use `??` alias to generate a backup with box used in this terminal.
 2) In the second terminal, the box used is empty so the user can use `??`
@@ -53,12 +53,12 @@ box size is higher than 4 flags. To allow you to keep an efficient *flagbox*
 usage without blocking you with only 4 flags, *flagbox* defines `,?` and `?,`
 aliases. These aliases allow you to go to next or previous box cyclicly. If
 your current box is not empty and is the last in your cycle, going to the next
-box will build a new one. Building a new box, keep the marks you defined in
+box will build a new one. Building a new box, keeps the marks you defined in
 other boxes and allows you to use same aliases for different directories you
 want to save.
 
-Suppose we have a current lonely and empty box. Using `,?` alias will not
-create a new box because its empty. We have to fill it with an alias.
+Let's assume you have a current lonely and empty box. Using `,?` alias will
+not create a new box because its empty. We have to fill it with an alias.
 
 </br>
 <img src="/media/filledbox.png">

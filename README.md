@@ -52,7 +52,7 @@ the mechanism. To reset a mark you have to build a string composed with `?`
 and `,` characters. A comma means 'keep the matched mark' and a `?` means
 'reset the matched mark'. For the above box, if you type: `?,?` you will
 reset `,` mark, keep `,,` mark and reset `,,,` marks because for the first and
-third string's indexes, you place `?` characters.
+third string's indexes, you placed `?` characters.
 
 </br>
 <img src="/media/chain101.png">

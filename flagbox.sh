@@ -451,15 +451,39 @@ function flagbox () {
 
     elif [ ${#CHAIN} -eq ${FLAGBOX_SIZE} ]; then
       local DECIMAL=1
+      local CONCAT=""
+      local BOX_DELETED=false
 
 #     EDITION mode {{{3
 
       if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
-        for I in $(seq 1 ${#CHAIN}); do
-          if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
-            FLAGBOX[${FLAGBOX[BOX]},${I}]=''
-          fi
-        done
+        if [ $(echo "${CHAIN}" | grep -x -E "1+" | wc -l) -eq 1 ] \
+          && [ ${FLAGBOX[MAX]} -gt 1 ]; then
+            for I in $(seq 1 ${FLAGBOX_SIZE}); do
+              CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+            done
+            if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
+              for I in $(seq $(( ${BOX} + 1 )) ${MAX}); do
+                for J in $(seq 1 ${FLAGBOX_SIZE}); do
+                  FLAGBOX[$(( ${I} - 1 )),${J}]=${FLAGBOX[${I},${J}]}
+                done
+              done
+              for I in $(seq 1 ${FLAGBOX_SIZE}); do
+                unset FLAGBOX[${FLAGBOX[MAX]},${J}]
+              done
+              (( FLAGBOX[MAX]-=1 ))
+              [ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ] && (( FLAGBOX[BOX]-=1 ))
+              BOX_DELETED=true
+            fi
+        fi
+
+        if ! ${BOX_DELETED}; then
+          for I in $(seq 1 ${#CHAIN}); do
+            if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
+              FLAGBOX[${FLAGBOX[BOX]},${I}]=''
+            fi
+          done
+        fi
         ${FLAGBOX_VRESET} && flagbox --chain 1
 
 #     }}}
@@ -472,9 +496,10 @@ function flagbox () {
         fi
       fi
 
-      unset DECIMAL
-
 #     }}}
+
+      unset DECIMAL CONCAT BOX_DELETED
+
 #   }}}
 #   List-flags chain {{{2
 

@@ -48,8 +48,9 @@ backup for another marks you can define your own backup by adding a parameter:
 
 The main problem of *Flagbox* is its box size limitation. In deed, even if you
 can set a big box size (10, 15, 50 or why not 315204? See
-**Configuration section**), you will find quickly by yourself that navigating
-in your workspace will be more annoying by typing 15 times a comma than typing
+**Configuration section**), you will find quickly (and by yourself) that
+navigating in your workspace will be more annoying by typing 15 times a comma
+than typing
 
 `cd /the/path/to/your/directory`.
 

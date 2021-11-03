@@ -21,6 +21,7 @@ user can use `??` alias to generate a backup with box used in this terminal.
 alias again to change its content to the box saved in backup. And that's it,
 the user can now use two different boxes with the same content in
 two different terminals.
+
 Even if `??` alias seems very unusual, this command has a very flexible usage.
 Here 2 other situations where `??` alias will be the solution:
 - The user has an opened terminal with a full-filled box. For system reasons,

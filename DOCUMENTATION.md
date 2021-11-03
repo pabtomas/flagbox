@@ -5,7 +5,7 @@ If you have not read the
 it to understand how to use *Flagbox* for a basic usage. In this document, I
 am going to talk about *Flagbox*'s advanced features and I am assuming that
 you have enough practice with *Flagbox* to understand basic *Flagbox*
-operations without mentionning the matching alias.
+operations without mentionning the matching aliases.
 
 ## Backup feature
 
@@ -87,5 +87,30 @@ marks alias on it**:
 </br>
 <img src="/media/deletebox.png">
 </br>
+
+## Navigation Mode
+
+If you read the documentation so far you should notice that `?` alias displays
+two information this documentation have not covered yet:
+1. The mode. When you open a terminal, *Flagbox* starts in **Edition mode**
+(EDIT). In this mode, *Flagbox* allows you to erase a mark. When you leave
+this mode this action will not be possible. Leaving Edition mode is a
+guarantee to not accidentally erase a mark (or a filled-box). It is a good
+practice. You should use Edition mode only when you need it. When you finished
+what you did with Edition mode, you are highly encouraged to use the
+**Navigation Mode** (NAV). In Navigation mode, resetting aliases ability is
+replaced by navigation ability. In deed, you probably notice that if you have
+a huge boxes number, navigating between them with `,?` and `?,` aliases is a
+painful task. To understand how Navigation mode works, you have to convert
+numbers in their binary representation where '0' is a comma and '1' is a
+question mark. The alias length is as minimal as possible. So if you want go
+to box 1 and you have not more than 7 boxes, the alias to achieve this is
+`,,?` (for box 2 it is `,?,`, box 3 `,??`, box 4 `?,,`, etc). If you want go
+to box 5 and you have more than 7 boxes but you have not more than 16 boxes,
+the alias to achieve this is `,?,?`. If you are not enough confortable with
+binary representation to use it in your workflow, you can configure *Flagbox*
+to generate decimal aliases instead of binary aliases in Navigation mode (See
+**Configuration section**).
+2.
 
 ## Configuration

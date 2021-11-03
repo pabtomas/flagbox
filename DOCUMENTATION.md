@@ -25,20 +25,20 @@ Even if `??` alias seems very unusual, this command has a very flexible usage.
 Here 2 other situations where `??` alias can save you:
 - You have an opened terminal with a full-filled box. For system reasons, you
 have to restart your laptop. To keep your box content, you can:
-  1. use `??` alias to make a backup,
-  2. restart the system,
-  3. reuse `??` to get the content of your box back.
+  1) use `??` alias to make a backup,
+  2) restart the system,
+  3) reuse `??` to get the content of your box back.
 
 - You have an opened terminal with a filled box. For some reasons, you need to
 define new marks for short-term usage without loosing your current box
 content. However your box does not have enough empty space to keep your
 current box content and define new marks. To solve this situation, you can:
-  1. use `??` alias to make a backup,
-  2. empty space in your current box,
-  3. define your short-term marks,
-  4. use your newly created marks,
-  5. empty your box with full question mark alias,
-  6. reuse `??` to get the content of your box back.
+  1) use `??` alias to make a backup,
+  2) empty space in your current box,
+  3) define your short-term marks,
+  4) use your newly created marks,
+  5) empty your box with full question mark alias,
+  6) reuse `??` to get the content of your box back.
 
 `??` alias can take an optional argument. If you need to keep the default
 backup for another marks you can define your own backup by adding a parameter:

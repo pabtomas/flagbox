@@ -35,7 +35,7 @@ the directory where you entered `,`.
 
 Now if you are changing directory (exemple: `/tmp` directory) and you are
 typing `,`, you will come back to the directory pointed by `,` mark. **Full
-commas aliases** are used by *Flagbox* to save directory and jump it later.
+comma aliases** are used by *Flagbox* to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
 You can change this setting in your `.flagbox.conf` file.
 
@@ -65,7 +65,7 @@ characters.
 
 Now that you know how to save a directory, delete a mark, use a mark and list
 marks you defined, you have enough background for a basic usage of this tool.
-If you want to learn more about advanced features, you can read the
+If you want to learn about advanced features, you can read the
 [documentation](https://github.com/pabtomas/flagbox/blob/master/DOCUMENTATION.md)
 
 ## Installation

@@ -3,8 +3,9 @@
 If you have not read the
 [README file](https://github.com/pabtomas/flagbox/blob/master/README.md), read
 it to understand how to use *Flagbox* for a basic usage. In this document, I
-am going to talk about *Flagbox*'s advanced features and I assume that you
-have a bit of practice with *Flagbox*.
+am going to talk about *Flagbox*'s advanced features and I am assuming that
+you have enough practice with *Flagbox* to understand basic *Flagbox*
+operations without mentionning the matching alias.
 
 ## Backup feature
 
@@ -37,7 +38,7 @@ current box content and define new marks. To solve this situation, you can:
   - empty space in your current box,
   - define your short-term marks,
   - use your newly created marks,
-  - empty your box with full question mark alias,
+  - reset your current box,
   - reuse `??` to get the content of your box back.
 
 `??` **alias can take an optional argument**. If you need to keep the default

@@ -1,4 +1,4 @@
-# flagbox - a 2-keys marks manager for Bash
+# Flagbox - a 2-keys marks manager for Bash
 
 </br>
 <img src="/media/weirdcommands.png">
@@ -6,18 +6,18 @@
 
 Did you ever see those typed commands in a terminal? Whatever your answer, I
 am convinced that you find it ambiguous and not friendly-user. You are right:
-*flagbox* was not conceived with friendly-usage in mind. It was conceived for
+*Flagbox* was not conceived with friendly-usage in mind. It was conceived for
 efficiency. For this purpose friendly-user aspect was not a priority during
-*flagbox* conception. If you are searching a tool which allows you to make a
+*Flagbox* conception. If you are searching a tool which allows you to make a
 similar job with a more friendly usage, you can go to the **Credit section**.
-Most of them inspired the creation of *flagbox*.
+Most of them inspired the creation of *Flagbox*.
 
-*flagbox* is a mark manager. It allows you to save the directory you are in
+*Flagbox* is a mark manager. It allows you to save the directory you are in
 and jump it later.
 
 ## Basic usage
 
-Saving a directory is easy. If your *flagbox* settings are default settings,
+Saving a directory is easy. If your *Flagbox* settings are default settings,
 when you launch your terminal you have an empty box. Type `?` to see your
 current box content:
 
@@ -25,7 +25,7 @@ current box content:
 <img src="/media/chain1.png">
 </br>
 
-Here *flagbox* is saying that your current box is empty. After entering `,`
+Here *Flagbox* is saying that your current box is empty. After entering `,`
 and typing `?` again, you can easily understand that the `,` mark is used for
 the directory where you used `,`.
 
@@ -35,11 +35,11 @@ the directory where you used `,`.
 
 Now if you are changing directory (exemple: `/tmp` directory) and typing
 `,`, you will come back to the directory pointed by `,` mark. Full commas
-aliases are used by *flagbox* to allow you to save directory and jump it
+aliases are used by *Flagbox* to allow you to save directory and jump it
 later. By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,`
 marks). You can change this setting in your `.flagbox.conf` file.
 
-What now if you want to erase a mark that you will not use anymore? *flagbox*
+What now if you want to erase a mark that you will not use anymore? *Flagbox*
 generates resetting aliases for this purpose. Let's assume that your current
 box is built with the following content:
 

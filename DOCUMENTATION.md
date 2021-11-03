@@ -2,18 +2,18 @@
 
 If you have not read the
 [README file](https://github.com/pabtomas/flagbox/blob/master/README.md) of
-this repository, read it to understand how to use *flagbox* for a basic usage.
-In this document we are going to talk about *flagbox*'s advanced features and
-I assume that you have a bit of practice with *flagbox*.
+this repository, read it to understand how to use *Flagbox* for a basic usage.
+In this document we are going to talk about *Flagbox*'s advanced features and
+I assume that you have a bit of practice with *Flagbox*.
 
 ## Backup feature
 
 Let's assume you opened a first terminal. You play with it a little bit and
 finally you filled a box full of marks. What if you want to open a second
 terminal and use marks defined in the first terminal without doing the job a
-second time? *flagbox* generates the `??` alias for this purpose. The `??`
-usage is simple: if the current box you are using is empty, *flagbox* will
-search for a default backup and restore it. Otherwise, *flagbox* will generate
+second time? *Flagbox* generates the `??` alias for this purpose. The `??`
+usage is simple: if the current box you are using is empty, *Flagbox* will
+search for a default backup and restore it. Otherwise, *Flagbox* will generate
 a backup. For the use case we define earlier, the solution is simple:
 1) In the first terminal, the current box of the user is not empty, so the
 user can use `??` alias to generate a backup with box used in this terminal.
@@ -41,16 +41,16 @@ backup for another marks you can define your own backup by adding a parameter:
 
 ## New box feature
 
-The main problem of *flagbox* is its box size limitation. In deed, even if you
+The main problem of *Flagbox* is its box size limitation. In deed, even if you
 can put a large number for your box size (10, 15, 50 or why not 315204?), you
 will find quickly by yourself that navigating in your workspace will be more
 annoying by typing 15 times a comma than typing
 
 `cd /the/path/to/your/directory`.
 
-For this reason, I could not guarantee an efficient *flagbox* usage if your
-box size is higher than 4 flags. To allow you to keep an efficient *flagbox*
-usage without blocking you with only 4 flags, *flagbox* defines `,?` and `?,`
+For this reason, I could not guarantee an efficient *Flagbox* usage if your
+box size is higher than 4 flags. To allow you to keep an efficient *Flagbox*
+usage without blocking you with only 4 flags, *Flagbox* defines `,?` and `?,`
 aliases. These aliases allow you to go to next or previous box cyclicly. If
 your current box is not empty and is the last in your cycle, going to the next
 box will build a new one. Building a new box, keeps the marks you defined in

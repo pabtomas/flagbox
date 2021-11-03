@@ -10,7 +10,7 @@ I assume that you have a bit of practice with *flagbox*.
 
 Suppose you opened a first terminal. You play with it a little bit and finally
 you filled a box full of marks. What if you want to open a second terminal and
-use marks defined is the first terminal without doing the job all again ?
+use marks defined is the first terminal without doing the job all again?
 *flagbox* generates the `??` alias for this purpose. The `??` usage is simple:
 if the current box you are using is empty, *flagbox* will search for a default
 backup and restore it. Otherwise, *flagbox* will generate a backup. For the
@@ -41,7 +41,7 @@ backup for another marks you can define your own backup by adding a parameter:
 ## New box feature
 
 The main problem of *flagbox* is its box size limitation. In deed, even if you
-can put a large number for your box size (10, 15, 50 or why not 315204 ?), you
+can put a large number for your box size (10, 15, 50 or why not 315204?), you
 will find quickly by yourself that navigating in your workspace will be more
 annoying by typing 15 times a comma than typing
 `cd /the/path/to/your/directory`. For this reason, I could not guarantee an

@@ -4,13 +4,13 @@
 <img src="/media/weirdcommands.png">
 </br>
 
-Did you ever see those typed commands in a terminal ? Whatever your answer, I
+Did you ever see those typed commands in a terminal? Whatever your answer, I
 am convinced that you find it ambiguous and not friendly-user. You are right:
 *flagbox* was not conceived with friendly-usage in mind. It was conceived for
 efficiency. For this purpose friendly-user aspect was not a priority during
 *flagbox* conception. If you are searching a tool which allows you to make a
-similar job with a more friendly usage, you can go to the Credit section of
-this README. Most of them inspired the creation of *flagbox*.
+similar job with a more friendly usage, you can go to the **Credit section**.
+Most of them inspired the creation of *flagbox*.
 
 *flagbox* is a mark manager. It allows you to save the directory you are in
 and jump it later.
@@ -39,7 +39,7 @@ aliases are used by *flagbox* to allow you to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
 You can change this setting in your `.flagbox.conf` file.
 
-What now if you want to erase a mark that you will not use anymore ? *flagbox*
+What now if you want to erase a mark that you will not use anymore? *flagbox*
 generates resetting aliases for this purpose. Suppose that your current box is
 built with the following content:
 
@@ -54,7 +54,7 @@ and `,` characters. A comma means 'keep the matched mark' and a `?` means
 1. reset `,` mark,
 2. keep `,,` mark,
 3. and reset `,,,` marks
-Why ? Because for the first and third alias' indexes, you placed `?`
+Why? Because for the first and third alias' indexes, you placed `?`
 characters.
 
 </br>

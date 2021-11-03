@@ -10,11 +10,11 @@ I assume that you have a bit of practice with *flagbox*.
 
 Let's assume you opened a first terminal. You play with it a little bit and
 finally you filled a box full of marks. What if you want to open a second
-terminal and use marks defined is the first terminal without doing the job all
-again? *flagbox* generates the `??` alias for this purpose. The `??` usage is
-simple: if the current box you are using is empty, *flagbox* will search for a
-default backup and restore it. Otherwise, *flagbox* will generate a backup.
-For the use case we define earlier, the solution is simple:
+terminal and use marks defined in the first terminal without doing the job a
+second time? *flagbox* generates the `??` alias for this purpose. The `??`
+usage is simple: if the current box you are using is empty, *flagbox* will
+search for a default backup and restore it. Otherwise, *flagbox* will generate
+a backup. For the use case we define earlier, the solution is simple:
 1) In the first terminal, the current box of the user is not empty, so the
 user can use `??` alias to generate a backup with box used in this terminal.
 2) In the second terminal, the box used is empty so the user can use `??`

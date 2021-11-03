@@ -64,7 +64,7 @@ Now using `,?` alias will create a new box where you can reuse `,` alias for
 an other directory.
 
 </br>
-<img src="/media/box2.png">
+<img src="/media/2boxes.png">
 </br>
 
 With these two boxes you just have to use `,?` and `?,` to switch box and use

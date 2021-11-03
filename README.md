@@ -1,6 +1,8 @@
 # flagbox - a 2-keys marks manager for Bash
 
+</br>
 <img src="/media/weirdcommands.png">
+</br>
 
 Did you ever see those typed commands in a terminal ? Whatever your answer, I
 am convinced that you find it ambiguous and not friendly-user. You are right:
@@ -19,26 +21,32 @@ Saving a directory is easy. If your flagbox settings are default settings, when
 you launch your terminal you have an empty box. Type `?` to see your current
 box content:
 
+</br>
 <img src="/media/chain1.png">
+</br>
 
 Here flagbox is saying that your current box is empty. After entering `,` and
 typing `?` again, you can easily understand that the `,` mark is used for the
 directory where you used `,`.
 
+</br>
 <img src="/media/chain0.png">
+</br>
 
 Now if you are changing directory (exemple: `/tmp` directory), and you type
 `,`, you will come-back to the directory pointed by `,` mark. Full commas
 aliases are used by flagbox to allow you to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
 You can change this setting in your `.flagbox.conf` file. We will talk about
-flagbox configuration in documentation pages.
+flagbox configuration in the DOCUMENTATION.md file of this repository.
 
 What now if you want to erase a mark that you will not use anymore ? flagbox
 generates resetting aliases for this purpose. Suppose that your current box is
 builded with the following content:
 
+</br>
 <img src="/media/fullfilledbox.png">
+</br>
 
 Resetting a mark is a bit tricky but really easy to use when you understand
 the mechanism. To reset a mark you have to build a string composed with `?`
@@ -47,7 +55,9 @@ and `,` characters. A comma means 'keep the matched mark' and a `?` means
 reset `,` mark, keep `,,` mark and reset `,,,` marks because for the first and
 third string's indexes, you place `?` characters.
 
+</br>
 <img src="/media/chain101.png">
+</br>
 
 Now that you know how to save a directory, delete a mark, use a mark and list
 marks you defined, you have enough background for a basic usage of this tool.

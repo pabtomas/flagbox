@@ -115,8 +115,8 @@ Why? Because using this mark will change the *Flagbox* mode. So if:
   - *Flagbox* is in Edition Mode,
   - the `,` mark is used for your home directory,
   - you are located in your home directory,
-</br></br> Using `,` mark will set *Flagbox* in Navigation mode. This is exactly the same
-operation if *Flagbox* is in Navigation mode and you need to come back to
-*Edition Mode*.
+</br></br> Using `,` mark will set *Flagbox* in Navigation mode. This is
+exactly the same operation if *Flagbox* is in Navigation mode and you need to
+come back to *Edition Mode*.
 
 ## Configuration

@@ -109,7 +109,7 @@ more than 7 boxes but you have not more than 16 boxes, the alias to achieve
 this is `,?,?`. </br></br>If you are not enough confortable with binary
 representation to use it in your workflow, you can configure *Flagbox* to
 generate decimal aliases instead of binary aliases in Navigation mode (See
-**Configuration section**).</br>
+**Configuration section**).</br></br>
 2. *Flagbox* highlights a mark if the current directory is used by this mark.
 Why? Because using this mark will change the *Flagbox* mode. So if:
   - *Flagbox* is in Edition Mode,

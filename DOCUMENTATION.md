@@ -98,7 +98,7 @@ guarantee to not accidentally erase a mark (or a filled-box). You should use
 Edition mode only when you need it. When you finished what you did with
 Edition mode, you are highly encouraged to use the **Navigation Mode** (NAV).
 
-In Navigation mode, resetting aliases ability is replaced by navigation
+  In Navigation mode, resetting aliases ability is replaced by navigation
 ability. In deed, you probably notice that if you have a huge boxes number,
 navigating between them with `,?` and `?,` aliases is a painful task. To
 understand how Navigation mode works, you have to convert numbers in their
@@ -109,7 +109,7 @@ is `,?,`, box 3 `,??`, box 4 `?,,`, etc). If you want go to box 5 and you have
 more than 7 boxes but you have not more than 16 boxes, the alias to achieve
 this is `,?,?`.
 
-If you are not enough confortable with binary representation
+  If you are not enough confortable with binary representation
 to use it in your workflow, you can configure *Flagbox* to generate decimal
 aliases instead of binary aliases in Navigation mode (See **Configuration
 section**).

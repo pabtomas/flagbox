@@ -54,7 +54,6 @@ function flagbox () {
     declare -r DEFAULT_VRESET=false
     declare -r DEFAULT_VRESTORE=true
     declare -r DEFAULT_FOLDLISTING=false
-    declare -r DEFAULT_STACKBOX=false
     declare -r DEFAULT_AUTOWRITE=false
     declare -r DEFAULT_AUTOWRITEFILE="${HOME}/.flagbox_autowrite"
     declare -r DEFAULT_AUTORESTORE=false
@@ -115,11 +114,6 @@ function flagbox () {
     if [ ! -v FLAGBOX_FOLDLISTING ] || [ "x$(printf "${FLAGBOX_FOLDLISTING}" \
       | tr -d '[[:space:]]')" == "x" ]; then
         FLAGBOX_FOLDLISTING=${DEFAULT_FOLDLISTING}
-    fi
-
-    if [ ! -v FLAGBOX_STACKBOX ] || [ "x$(printf "${FLAGBOX_STACKBOX}" \
-      | tr -d '[[:space:]]')" == "x" ]; then
-        FLAGBOX_STACKBOX=${DEFAULT_STACKBOX}
     fi
 
     if [ ! -v FLAGBOX_AUTOWRITE ] || [ "x$(printf "${FLAGBOX_AUTOWRITE}" \
@@ -214,12 +208,6 @@ function flagbox () {
 
     if [ ${#DUP} -gt 0 ]; then
       echo -e "${YELLOW}Your are highly discouraged to use those characters for FLAGBOX_SYMB1 and FLAGBOX_SYMB2. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
-    fi
-
-    if [ "${FLAGBOX_STACKBOX}" != "false" ] \
-      && [ "${FLAGBOX_STACKBOX}" != "true" ]; then
-        echo "${RED}FLAGBOX_STACKBOX should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
     fi
 
     if [ "${FLAGBOX_ALIASES}" != "false" ] \
@@ -463,15 +451,39 @@ function flagbox () {
 
     elif [ ${#CHAIN} -eq ${FLAGBOX_SIZE} ]; then
       local DECIMAL=1
+      local CONCAT=""
+      local BOX_DELETED=false
 
 #     EDITION mode {{{3
 
       if [ "${FLAGBOX[MODE]}" == "EDIT" ]; then
-        for I in $(seq 1 ${#CHAIN}); do
-          if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
-            FLAGBOX[${FLAGBOX[BOX]},${I}]=''
-          fi
-        done
+        if [ $(echo "${CHAIN}" | grep -x -E "1+" | wc -l) -eq 1 ] \
+          && [ ${FLAGBOX[MAX]} -gt 1 ]; then
+            for I in $(seq 1 ${FLAGBOX_SIZE}); do
+              CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+            done
+            if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
+              for I in $(seq $(( ${BOX} + 1 )) ${MAX}); do
+                for J in $(seq 1 ${FLAGBOX_SIZE}); do
+                  FLAGBOX[$(( ${I} - 1 )),${J}]=${FLAGBOX[${I},${J}]}
+                done
+              done
+              for I in $(seq 1 ${FLAGBOX_SIZE}); do
+                unset FLAGBOX[${FLAGBOX[MAX]},${J}]
+              done
+              (( FLAGBOX[MAX]-=1 ))
+              [ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ] && (( FLAGBOX[BOX]-=1 ))
+              BOX_DELETED=true
+            fi
+        fi
+
+        if ! ${BOX_DELETED}; then
+          for I in $(seq 1 ${#CHAIN}); do
+            if [ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]; then
+              FLAGBOX[${FLAGBOX[BOX]},${I}]=''
+            fi
+          done
+        fi
         ${FLAGBOX_VRESET} && flagbox --chain 1
 
 #     }}}
@@ -484,9 +496,10 @@ function flagbox () {
         fi
       fi
 
-      unset DECIMAL
-
 #     }}}
+
+      unset DECIMAL CONCAT BOX_DELETED
+
 #   }}}
 #   List-flags chain {{{2
 

@@ -54,10 +54,6 @@ function flagbox () {
     declare -r DEFAULT_VRESET=false
     declare -r DEFAULT_VRESTORE=true
     declare -r DEFAULT_FOLDLISTING=false
-    declare -r DEFAULT_AUTOWRITE=false
-    declare -r DEFAULT_AUTOWRITEFILE="${HOME}/.flagbox_autowrite"
-    declare -r DEFAULT_AUTORESTORE=false
-    declare -r DEFAULT_AUTORESTOREFILE="${HOME}/.flagbox_autowrite"
 
     if [ ! -v FLAGBOX_SIZE ] || [ "x$(printf "${FLAGBOX_SIZE}" \
       | tr -d '[[:space:]]')" == "x" ]; then
@@ -114,28 +110,6 @@ function flagbox () {
     if [ ! -v FLAGBOX_FOLDLISTING ] || [ "x$(printf "${FLAGBOX_FOLDLISTING}" \
       | tr -d '[[:space:]]')" == "x" ]; then
         FLAGBOX_FOLDLISTING=${DEFAULT_FOLDLISTING}
-    fi
-
-    if [ ! -v FLAGBOX_AUTOWRITE ] || [ "x$(printf "${FLAGBOX_AUTOWRITE}" \
-      | tr -d '[[:space:]]')" == "x" ]; then
-        FLAGBOX_AUTOWRITE=${DEFAULT_AUTOWRITE}
-    fi
-
-    if [ ! -v FLAGBOX_AUTOWRITEFILE ] \
-      || [ "x$(printf "${FLAGBOX_AUTOWRITEFILE}" \
-        | tr -d '[[:space:]]')" == "x" ]; then
-          FLAGBOX_AUTOWRITEFILE=${DEFAULT_AUTOWRITEFILE}
-    fi
-
-    if [ ! -v FLAGBOX_AUTORESTORE ] || [ "x$(printf "${FLAGBOX_AUTORESTORE}" \
-      | tr -d '[[:space:]]')" == "x" ]; then
-        FLAGBOX_AUTORESTORE=${DEFAULT_AUTORESTORE}
-    fi
-
-    if [ ! -v FLAGBOX_AUTORESTOREFILE ] \
-      || [ "x$(printf "${FLAGBOX_AUTORESTOREFILE}" \
-        | tr -d '[[:space:]]')" == "x" ]; then
-          FLAGBOX_AUTORESTOREFILE=${DEFAULT_AUTORESTOREFILE}
     fi
 
 #   }}}
@@ -255,30 +229,6 @@ function flagbox () {
     if [ "${FLAGBOX_FOLDLISTING}" != "false" ] \
       && [ "${FLAGBOX_FOLDLISTING}" != "true" ]; then
         echo "${RED}FLAGBOX_FOLDLISTING should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
-    fi
-
-    if [ "${FLAGBOX_AUTOWRITE}" != "false" ] \
-      && [ "${FLAGBOX_AUTOWRITE}" != "true" ]; then
-        echo "${RED}FLAGBOX_AUTOWRITE should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
-    fi
-
-    if [ "x$(printf "${FLAGBOX_AUTOWRITEFILE}" \
-      | tr -d "[${FILE_AUTHORIZED}]")" != "x" ]; then
-        echo "${RED}FLAGBOX_AUTOWRITEFILE should only contains authorized filename characters:${RESET} $(echo "${FILE_AUTHORIZED}" | tr -d '\\')" >&2
-        return 1
-    fi
-
-    if [ "${FLAGBOX_AUTORESTORE}" != "false" ] \
-      && [ "${FLAGBOX_AUTORESTORE}" != "true" ]; then
-        echo "${RED}FLAGBOX_AUTORESTORE should be ${RESET} true ${RED}or${RESET} false" >&2
-        return 1
-    fi
-
-    if [ "x$(printf "${FLAGBOX_AUTORESTOREFILE}" \
-      | tr -d "[${FILE_AUTHORIZED}]")" != "x" ]; then
-        echo "${RED}FLAGBOX_AUTORESTOREFILE should only contains authorized filename characters:${RESET} $(echo "${FILE_AUTHORIZED}" | tr -d '\\')" >&2
         return 1
     fi
 

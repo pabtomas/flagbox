@@ -520,33 +520,10 @@ function flagbox () {
       if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
         if [ -f "${BACKUP}" ]; then
 
-#       Box restore {{{4
-
-          if [ $(cat ${BACKUP} | wc -l) -le ${FLAGBOX_SIZE} ]; then
-            while IFS= read -r LINE; do
-              FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
-              (( I+=1 ))
-            done < ${BACKUP}
-
-#       }}}
-#       Full restore {{{4
-
-          else
-            unset FLAGBOX && declare -g -A FLAGBOX
-            FLAGBOX[BOX]=1
-            FLAGBOX[MAX]=1
-            FLAGBOX[MODE]="EDIT"
-            while IFS= read -r LINE; do
-              FLAGBOX[${J},${I}]="${LINE}"
-              (( I+=1 ))
-              if [ ${I} -gt ${FLAGBOX_SIZE} ]; then
-                (( J+=1 ))
-                I=1
-              fi
-            done < ${BACKUP}
-          fi
-
-#       }}}
+          while IFS= read -r LINE; do
+            FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
+            (( I+=1 ))
+          done < ${BACKUP}
 
           echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
           ${FLAGBOX_VRESTORE} && flagbox --chain 1

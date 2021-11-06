@@ -2,9 +2,9 @@
 
 ## Security
 
-If you think you have found a **security issue**, please do not mention it in
-this repository. Instead, send an email to pabtomas@protonmail.com with as
-many details as possible so it can be handled confidential.
+If you think you have found a **security issue**, open an issue and please do
+not mention details in this repository. I will give you an email adress to
+send as many details as possible so it can be handled confidential.
 
 ## Bug Reports and Feature Requests
 

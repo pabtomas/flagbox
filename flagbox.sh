@@ -41,6 +41,13 @@ function flagbox () {
 
   if ${SOURCE}; then
 # --source {{{1
+
+    if [ -v FLAGBOX ]; then
+      for A in ${FLAGBOX[ALIAS]}; do
+        unalias "${A}"
+      done
+    fi
+
 #   Default user variables {{{2
 
     declare -r DEFAULT_SIZE=3
@@ -253,11 +260,11 @@ function flagbox () {
         alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
       done
 
-      for I in ${BIN[@]}; do
-        if [ ${I} -gt 0 ]; then
-          NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+      for B in ${BIN[@]}; do
+        if [ ${B} -gt 0 ]; then
+          NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
             | tr '1' "${FLAGBOX_SYMB2}")"
-          alias "${NAME}"="flagbox --chain ${I}"
+          alias "${NAME}"="flagbox --chain ${B}"
           FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
         fi
       done
@@ -298,8 +305,8 @@ function flagbox () {
               FLAGBOX[MODE]="NAV"
 
               if ${FLAGBOX_ALIASES}; then
-                for I in ${FLAGBOX[ALIAS]}; do
-                  unalias "${I}"
+                for A in ${FLAGBOX[ALIAS]}; do
+                  unalias "${A}"
                 done
                 unset FLAGBOX[ALIAS]
 
@@ -347,8 +354,8 @@ function flagbox () {
               FLAGBOX[MODE]="EDIT"
 
               if ${FLAGBOX_ALIASES}; then
-                for I in ${FLAGBOX[ALIAS]}; do
-                  unalias "${I}"
+                for A in ${FLAGBOX[ALIAS]}; do
+                  unalias "${A}"
                 done
                 unset FLAGBOX[ALIAS]
 
@@ -364,11 +371,11 @@ function flagbox () {
                       | tr ' ' '0')$J"; \
                     (( I+=1 )); \
                   done) )
-                for I in ${BIN[@]}; do
-                  if [ ${I} -gt 0 ]; then
-                    NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+                for B in ${BIN[@]}; do
+                  if [ ${B} -gt 0 ]; then
+                    NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
                       | tr '1' "${FLAGBOX_SYMB2}")"
-                    alias "${NAME}"="flagbox --chain ${I}"
+                    alias "${NAME}"="flagbox --chain ${B}"
                     FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
                   fi
                 done

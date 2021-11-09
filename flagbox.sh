@@ -520,6 +520,7 @@ function flagbox () {
       if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
         if [ -f "${BACKUP}" ]; then
 
+          I=1
           while IFS= read -r LINE; do
             FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
             (( I+=1 ))
@@ -538,6 +539,7 @@ function flagbox () {
         else
           [ -f ${BACKUP} ] && rm ${BACKUP}
         fi
+        I=1
         for I in $(seq 1 ${FLAGBOX_SIZE}); do
           TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
         done

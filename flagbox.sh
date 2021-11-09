@@ -43,6 +43,9 @@ function flagbox () {
 # --source {{{1
 
     if [ -v FLAGBOX ]; then
+      for A in ${FLAGBOX[BIN_ALIAS]}; do
+        unalias "${A}"
+      done
       for A in ${FLAGBOX[ALIAS]}; do
         unalias "${A}"
       done
@@ -246,7 +249,7 @@ function flagbox () {
       FLAGBOX[BOX]=1
       FLAGBOX[MAX]=1
       FLAGBOX[MODE]="EDIT"
-      FLAGBOX[ALIAS]=""
+      FLAGBOX[BIN_ALIAS]=""
       for I in $(seq 1 ${FLAGBOX_SIZE}); do
         FLAGBOX[1,${I}]=''
       done
@@ -258,6 +261,7 @@ function flagbox () {
       for I in $(seq 1 ${FLAGBOX_SIZE}); do
         NAME="$(printf %${I}s | tr ' ' "${FLAGBOX_SYMB1}")"
         alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
+        FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
       done
 
       for B in ${BIN[@]}; do
@@ -265,15 +269,19 @@ function flagbox () {
           NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
             | tr '1' "${FLAGBOX_SYMB2}")"
           alias "${NAME}"="flagbox --chain ${B}"
-          FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
         fi
       done
 
       alias "${FLAGBOX_SYMB2}"="flagbox --chain 1"
       alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"="flagbox --chain 11"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"
 
       alias "${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"="flagbox --chain 01"
       alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"="flagbox --chain 10"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"
     fi
 
 #   }}}
@@ -305,10 +313,10 @@ function flagbox () {
               FLAGBOX[MODE]="NAV"
 
               if ${FLAGBOX_ALIASES}; then
-                for A in ${FLAGBOX[ALIAS]}; do
+                for A in ${FLAGBOX[BIN_ALIAS]}; do
                   unalias "${A}"
                 done
-                unset FLAGBOX[ALIAS]
+                unset FLAGBOX[BIN_ALIAS]
 
 #         Generate NAVIGATION mode aliases {{{5
 
@@ -332,7 +340,7 @@ function flagbox () {
                       | tr '1' "${FLAGBOX_SYMB2}")"
                   fi
                   alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
-                  FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                 done
                 unset BIN
 
@@ -354,10 +362,10 @@ function flagbox () {
               FLAGBOX[MODE]="EDIT"
 
               if ${FLAGBOX_ALIASES}; then
-                for A in ${FLAGBOX[ALIAS]}; do
+                for A in ${FLAGBOX[BIN_ALIAS]}; do
                   unalias "${A}"
                 done
-                unset FLAGBOX[ALIAS]
+                unset FLAGBOX[BIN_ALIAS]
 
 #         Generate EDITION mode aliases {{{5
 
@@ -376,7 +384,7 @@ function flagbox () {
                     NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
                       | tr '1' "${FLAGBOX_SYMB2}")"
                     alias "${NAME}"="flagbox --chain ${B}"
-                    FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                   fi
                 done
                 unset BIN

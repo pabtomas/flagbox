@@ -42,10 +42,13 @@ function flagbox () {
   if ${SOURCE}; then
 # --source {{{1
 
-    if [ -v FLAGBOX ]; then
+    if [ -v FLAGBOX[BIN_ALIAS] ]; then
       for A in ${FLAGBOX[BIN_ALIAS]}; do
         unalias "${A}"
       done
+    fi
+
+    if [ -v FLAGBOX[BIN_ALIAS] ]; then
       for A in ${FLAGBOX[ALIAS]}; do
         unalias "${A}"
       done
@@ -249,6 +252,7 @@ function flagbox () {
       FLAGBOX[BOX]=1
       FLAGBOX[MAX]=1
       FLAGBOX[MODE]="EDIT"
+      FLAGBOX[ALIAS]=""
       FLAGBOX[BIN_ALIAS]=""
       for I in $(seq 1 ${FLAGBOX_SIZE}); do
         FLAGBOX[1,${I}]=''

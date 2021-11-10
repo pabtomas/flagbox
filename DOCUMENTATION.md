@@ -169,7 +169,8 @@ FLAGBOX_VRESTORE=true
 FLAGBOX_FOLDLISTING=false
 ```
 
-</br>`FLAGBOX_SIZE` is a positive integer and must be at least 3.</br>
+</br>`FLAGBOX_SIZE` is a positive integer and must be at least 3.
+
 `FLAGBOX_SYMB1` and `FLAGBOX_SYMB2` must:
 1. be a single character not contained by this string: `.!#%`,
 2. not be a digit character if you set `FLAGBOX_DECIMAL_NAVMODE` to true,
@@ -178,4 +179,4 @@ FLAGBOX_FOLDLISTING=false
 and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
 command).
 
-</br></br>Other environment variables are booleans.
+</br>Other environment variables are booleans.

@@ -177,4 +177,4 @@ FLAGBOX_FOLDLISTING=false
 4. not hide a defined alias/command alone or in a mix. (if `FLAGBOX_SYMB1="l"`
 and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
 command).
-</br>Other environment variables are booleans.
+</br></br>Other environment variables are booleans.

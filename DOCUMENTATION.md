@@ -169,7 +169,7 @@ FLAGBOX_VRESTORE=true
 FLAGBOX_FOLDLISTING=false
 ```
 
-`FLAGBOX_SIZE` is a positive integer and must be at least 3.
+</br>`FLAGBOX_SIZE` is a positive integer and must be at least 3.</br>
 `FLAGBOX_SYMB1` and `FLAGBOX_SYMB2` must:
 1. be a single character not contained by this string: `.!#%`,
 2. not be a digit character if you set `FLAGBOX_DECIMAL_NAVMODE` to true,
@@ -177,4 +177,4 @@ FLAGBOX_FOLDLISTING=false
 4. not hide a defined alias/command alone or in a mix. (if `FLAGBOX_SYMB1="l"`
 and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
 command).
-Other environment variables are booleans.
+</br>Other environment variables are booleans.

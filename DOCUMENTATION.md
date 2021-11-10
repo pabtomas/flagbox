@@ -179,4 +179,4 @@ FLAGBOX_FOLDLISTING=false
 and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
 command).
 
-</br>Other environment variables are booleans.
+Other environment variables are booleans.

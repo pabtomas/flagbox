@@ -120,3 +120,63 @@ exactly the same operation if *Flagbox* is in Navigation mode and you need to
 come back to *Edition Mode*.
 
 ## Configuration
+
+It is possible to configure *Flagbox* behaviors with environment variables.
+These environments variables have to be defined in your home directory in a
+`.flagbox.conf` file. If you need to configure an unavailable *Flagbox*
+behavior, here are the [instructions to request a feature](https://github.com/pabtomas/flagbox/blob/master/CONTRIBUTING.md).
+This repository contains a [.flagbox.conf with default settings](https://github.com/pabtomas/flagbox/blob/master/.flagbox.conf)
+with a minimal description for each available environment variables. You can
+tweek those variables to get the *FLagbox* behavior you need. Here the content
+of this file:
+```
+# Put this file in your HOME and feel free to custom options to fit your needs
+
+# How many flags in a box?
+FLAGBOX_SIZE=3
+
+# First key
+FLAGBOX_SYMB1=","
+
+# Second key
+FLAGBOX_SYMB2="?"
+
+# If true, flagbox will generate aliases with FLAGBOX_SYMB1 and
+# FLAGBOX_SYMB2 variables when flagbox.sh is sourced
+FLAGBOX_ALIASES=true
+
+# If true, flagbox will generate decimal aliases instead of binary aliases for
+# NAVIGATION mode
+FLAGBOX_DECIMAL_NAVMODE=false
+
+# If true, flagbox will prompt before overwritting an existing backup file
+# with '11' chain
+FLAGBOX_BACKUPCONFIRM=true
+
+# If true, flagbox will list current box after a flag insertion
+FLAGBOX_VINSERT=false
+
+# If true, flagbox will list current box after a navigation move
+FLAGBOX_VNAV=true
+
+# If true, flagbox will list current box after a flag deletion
+FLAGBOX_VRESET=false
+
+# If true, flagbox will list current box after a restoration
+FLAGBOX_VRESTORE=true
+
+# If true, flagbox will output flags listing in a fold
+FLAGBOX_FOLDLISTING=false
+```
+
+</br>`FLAGBOX_SIZE` is a positive integer and must be at least 3.
+
+`FLAGBOX_SYMB1` and `FLAGBOX_SYMB2` must:
+1. be a single character not contained by this string: `.!#%`,
+2. not be a digit character if you set `FLAGBOX_DECIMAL_NAVMODE` to true,
+3. be different characters,
+4. not hide a defined alias/command alone or in a mix. (if `FLAGBOX_SYMB1="l"`
+and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
+command).
+
+Other environment variables are booleans.

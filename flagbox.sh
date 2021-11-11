@@ -41,6 +41,19 @@ function flagbox () {
 
   if ${SOURCE}; then
 # --source {{{1
+
+    if [ -v FLAGBOX[BIN_ALIAS] ]; then
+      for A in ${FLAGBOX[BIN_ALIAS]}; do
+        unalias "${A}"
+      done
+    fi
+
+    if [ -v FLAGBOX[BIN_ALIAS] ]; then
+      for A in ${FLAGBOX[ALIAS]}; do
+        unalias "${A}"
+      done
+    fi
+
 #   Default user variables {{{2
 
     declare -r DEFAULT_SIZE=3
@@ -119,49 +132,59 @@ function flagbox () {
 #   Check user variables {{{2
 
     if [ "x$(echo "${FLAGBOX_SIZE}" | tr -d '[0-9]')" != "x" ]; then
-      echo "${RED}FLAGBOX_SIZE has to be a positive integer${RESET}" >&2
+      echo "FLAGBOX_SIZE ${RED}has to be a positive integer${RESET}" >&2
       return 1
     fi
 
     if [ ${FLAGBOX_SIZE} -lt 3 ]; then
-      echo "${RED}FLAGBOX_SIZE has to be greater or equal to 3${RESET}" >&2
+      echo "FLAGBOX_SIZE ${RED}has to be greater or equal to${RESET} 3" >&2
       return 1
     fi
 
     if [ ${#FLAGBOX_SYMB1} -ne 1 ]; then
-      echo "${RED}FLAGBOX_SYMB1 must be a single character${RESET}" >&2
+      echo "FLAGBOX_SYMB1 ${RED}must be a single character${RESET}" >&2
       return 1
     fi
 
     if [ "x$(printf "${FLAGBOX_SYMB1}" \
       | tr -d '[[:space:]]')" == "x" ]; then
-        echo "${RED}FLAGBOX_SYMB1 must be different than a space character" >&2
+        echo "FLAGBOX_SYMB1 ${RED}must be different than a space character" >&2
         return 1
     fi
 
     if [ "x$(printf "${FLAGBOX_SYMB1}" \
       | tr -d "[${PROHIBITED_SYMB}]")" == "x" ]; then
-        echo "${YELLOW}Your are highly discouraged to use one of those characters for FLAGBOX_SYMB1 or FLAGBOX_SYMB2:${RESET} ${PROHIBITED_SYMB}"
+        echo "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_SYMB1${YELLOW} or ${RESET}FLAGBOX_SYMB2${YELLOW}:${RESET} ${PROHIBITED_SYMB}"
+    fi
+
+    if [ "${FLAGBOX_DECIMAL_NAVMODE}" == "true" ] && \
+      [ "x$(printf "${FLAGBOX_SYMB1}" | tr -d "[0-9]")" == "x" ]; then
+        echo "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_SYMB1 ${RED}can not be a digit character${RESET}" >&2
     fi
 
     if [ ${#FLAGBOX_SYMB2} -ne 1 ]; then
-      echo "${RED}FLAGBOX_SYMB2 must be a single character${RESET}" >&2
+      echo "FLAGBOX_SYMB2 ${RED}must be a single character${RESET}" >&2
       return 1
     fi
 
     if [ "x$(printf "${FLAGBOX_SYMB2}" \
       | tr -d '[[:space:]]')" == "x" ]; then
-        echo "${RED}FLAGBOX_SYMB2 must be different than a space character" >&2
+        echo "FLAGBOX_SYMB2 ${RED}must be different than a space character" >&2
         return 1
     fi
 
     if [ "x$(printf "${FLAGBOX_SYMB2}" \
       | tr -d "[${PROHIBITED_SYMB}]")" == "x" ]; then
-        echo "${YELLOW}Your are highly discouraged to use one of those characters for FLAGBOX_SYMB1 or FLAGBOX_SYMB2:${RESET} ${PROHIBITED_SYMB}"
+        echo "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_SYMB2${YELLOW} or ${RESET}FLAGBOX_SYMB2${YELLOW}:${RESET} ${PROHIBITED_SYMB}"
+    fi
+
+    if [ "${FLAGBOX_DECIMAL_NAVMODE}" == "true" ] && \
+      [ "x$(printf "${FLAGBOX_SYMB2}" | tr -d "[0-9]")" == "x" ]; then
+        echo "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_SYMB2 ${RED}can not be a digit character${RESET}" >&2
     fi
 
     if [ "${FLAGBOX_SYMB1}" == "${FLAGBOX_SYMB2}" ]; then
-      echo "${RED}FLAGBOX_SYMB2 and FLAGBOX_SYMB1 have to be different${RESET}" >&2
+      echo "FLAGBOX_SYMB2 ${RED}and${RESET} FLAGBOX_SYMB1 ${RED}have to be different${RESET}" >&2
       return 1
     fi
 
@@ -181,54 +204,54 @@ function flagbox () {
       | tr ' ' '\n')" | sort | uniq -d)
 
     if [ ${#DUP} -gt 0 ]; then
-      echo -e "${YELLOW}Your are highly discouraged to use those characters for FLAGBOX_SYMB1 and FLAGBOX_SYMB2. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
+      echo -e "${YELLOW}Your are highly discouraged to use those characters for${RESET} FLAGBOX_SYMB1 ${YELLOW}and${RESET} FLAGBOX_SYMB2${YELLOW}. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
     fi
 
     if [ "${FLAGBOX_ALIASES}" != "false" ] \
       && [ "${FLAGBOX_ALIASES}" != "true" ]; then
-        echo "${RED}FLAGBOX_ALIASES should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_ALIASES ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_DECIMAL_NAVMODE}" != "false" ] \
       && [ "${FLAGBOX_DECIMAL_NAVMODE}" != "true" ]; then
-        echo "${RED}FLAGBOX_DECIMAL_NAVMODE should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_DECIMAL_NAVMODE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_BACKUPCONFIRM}" != "false" ] \
       && [ "${FLAGBOX_BACKUPCONFIRM}" != "true" ]; then
-        echo "${RED}FLAGBOX_BACKUPCONFIRM should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_BACKUPCONFIRM ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_VINSERT}" != "false" ] \
       && [ "${FLAGBOX_VINSERT}" != "true" ]; then
-        echo "${RED}FLAGBOX_VINSERT should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_VINSERT ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_VNAV}" != "false" ] \
       && [ "${FLAGBOX_VNAV}" != "true" ]; then
-        echo "${RED}FLAGBOX_VNAV should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_VNAV ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_VRESET}" != "false" ] \
       && [ "${FLAGBOX_VRESET}" != "true" ]; then
-        echo "${RED}FLAGBOX_VRESET should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_VRESET ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_VRESTORE}" != "false" ] \
       && [ "${FLAGBOX_VRESTORE}" != "true" ]; then
-        echo "${RED}FLAGBOX_VRESTORE should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_VRESTORE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [ "${FLAGBOX_FOLDLISTING}" != "false" ] \
       && [ "${FLAGBOX_FOLDLISTING}" != "true" ]; then
-        echo "${RED}FLAGBOX_FOLDLISTING should be ${RESET} true ${RED}or${RESET} false" >&2
+        echo "FLAGBOX_FOLDLISTING ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
@@ -240,6 +263,7 @@ function flagbox () {
       FLAGBOX[MAX]=1
       FLAGBOX[MODE]="EDIT"
       FLAGBOX[ALIAS]=""
+      FLAGBOX[BIN_ALIAS]=""
       for I in $(seq 1 ${FLAGBOX_SIZE}); do
         FLAGBOX[1,${I}]=''
       done
@@ -251,22 +275,27 @@ function flagbox () {
       for I in $(seq 1 ${FLAGBOX_SIZE}); do
         NAME="$(printf %${I}s | tr ' ' "${FLAGBOX_SYMB1}")"
         alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
+        FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
       done
 
-      for I in ${BIN[@]}; do
-        if [ ${I} -gt 0 ]; then
-          NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+      for B in ${BIN[@]}; do
+        if [ ${B} -gt 0 ]; then
+          NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
             | tr '1' "${FLAGBOX_SYMB2}")"
-          alias "${NAME}"="flagbox --chain ${I}"
-          FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+          alias "${NAME}"="flagbox --chain ${B}"
+          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
         fi
       done
 
       alias "${FLAGBOX_SYMB2}"="flagbox --chain 1"
       alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"="flagbox --chain 11"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"
 
       alias "${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"="flagbox --chain 01"
       alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"="flagbox --chain 10"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"
     fi
 
 #   }}}
@@ -298,10 +327,10 @@ function flagbox () {
               FLAGBOX[MODE]="NAV"
 
               if ${FLAGBOX_ALIASES}; then
-                for I in ${FLAGBOX[ALIAS]}; do
-                  unalias "${I}"
+                for A in ${FLAGBOX[BIN_ALIAS]}; do
+                  unalias "${A}"
                 done
-                unset FLAGBOX[ALIAS]
+                unset FLAGBOX[BIN_ALIAS]
 
 #         Generate NAVIGATION mode aliases {{{5
 
@@ -325,7 +354,7 @@ function flagbox () {
                       | tr '1' "${FLAGBOX_SYMB2}")"
                   fi
                   alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
-                  FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                 done
                 unset BIN
 
@@ -347,10 +376,10 @@ function flagbox () {
               FLAGBOX[MODE]="EDIT"
 
               if ${FLAGBOX_ALIASES}; then
-                for I in ${FLAGBOX[ALIAS]}; do
-                  unalias "${I}"
+                for A in ${FLAGBOX[BIN_ALIAS]}; do
+                  unalias "${A}"
                 done
-                unset FLAGBOX[ALIAS]
+                unset FLAGBOX[BIN_ALIAS]
 
 #         Generate EDITION mode aliases {{{5
 
@@ -364,12 +393,12 @@ function flagbox () {
                       | tr ' ' '0')$J"; \
                     (( I+=1 )); \
                   done) )
-                for I in ${BIN[@]}; do
-                  if [ ${I} -gt 0 ]; then
-                    NAME="$(printf "${I}" | tr '0' "${FLAGBOX_SYMB1}" \
+                for B in ${BIN[@]}; do
+                  if [ ${B} -gt 0 ]; then
+                    NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
                       | tr '1' "${FLAGBOX_SYMB2}")"
-                    alias "${NAME}"="flagbox --chain ${I}"
-                    FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
+                    alias "${NAME}"="flagbox --chain ${B}"
+                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                   fi
                 done
                 unset BIN
@@ -520,6 +549,7 @@ function flagbox () {
       if [ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]; then
         if [ -f "${BACKUP}" ]; then
 
+          I=1
           while IFS= read -r LINE; do
             FLAGBOX[${FLAGBOX[BOX]},${I}]="${LINE}"
             (( I+=1 ))
@@ -538,6 +568,7 @@ function flagbox () {
         else
           [ -f ${BACKUP} ] && rm ${BACKUP}
         fi
+        I=1
         for I in $(seq 1 ${FLAGBOX_SIZE}); do
           TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
         done

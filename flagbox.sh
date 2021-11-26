@@ -45,7 +45,7 @@ function flagbox () {
     if [ -v FLAGBOX[BIN_ALIAS] ]; then
       for A in ${FLAGBOX[BIN_ALIAS]}; do
         A=$(eval "echo ${A}")
-        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -gt 0 ]; then
+        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
           unalias "${A}"
         fi
       done
@@ -53,7 +53,7 @@ function flagbox () {
 
     if [ -v FLAGBOX[ALIAS] ]; then
       for A in ${FLAGBOX[ALIAS]}; do
-        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -gt 0 ]; then
+        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
           unalias "${A}"
         fi
       done
@@ -334,7 +334,9 @@ function flagbox () {
               if ${FLAGBOX_ALIASES}; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
                   A=$(eval "echo ${A}")
-                  unalias "${A}"
+                  if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+                    unalias "${A}"
+                  fi
                 done
                 unset FLAGBOX[BIN_ALIAS]
 
@@ -384,7 +386,9 @@ function flagbox () {
               if ${FLAGBOX_ALIASES}; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
                   A=$(eval "echo ${A}")
-                  unalias "${A}"
+                  if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+                    unalias "${A}"
+                  fi
                 done
                 unset FLAGBOX[BIN_ALIAS]
 

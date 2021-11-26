@@ -44,13 +44,18 @@ function flagbox () {
 
     if [ -v FLAGBOX[BIN_ALIAS] ]; then
       for A in ${FLAGBOX[BIN_ALIAS]}; do
-        unalias "${A}"
+        A=$(eval "echo ${A}")
+        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+          unalias "${A}"
+        fi
       done
     fi
 
-    if [ -v FLAGBOX[BIN_ALIAS] ]; then
+    if [ -v FLAGBOX[ALIAS] ]; then
       for A in ${FLAGBOX[ALIAS]}; do
-        unalias "${A}"
+        if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+          unalias "${A}"
+        fi
       done
     fi
 
@@ -283,7 +288,7 @@ function flagbox () {
           NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
             | tr '1' "${FLAGBOX_SYMB2}")"
           alias "${NAME}"="flagbox --chain ${B}"
-          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
+          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
         fi
       done
 
@@ -328,7 +333,10 @@ function flagbox () {
 
               if ${FLAGBOX_ALIASES}; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  unalias "${A}"
+                  A=$(eval "echo ${A}")
+                  if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+                    unalias "${A}"
+                  fi
                 done
                 unset FLAGBOX[BIN_ALIAS]
 
@@ -354,7 +362,7 @@ function flagbox () {
                       | tr '1' "${FLAGBOX_SYMB2}")"
                   fi
                   alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
-                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
+                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
                 done
                 unset BIN
 
@@ -377,7 +385,10 @@ function flagbox () {
 
               if ${FLAGBOX_ALIASES}; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  unalias "${A}"
+                  A=$(eval "echo ${A}")
+                  if [ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]; then
+                    unalias "${A}"
+                  fi
                 done
                 unset FLAGBOX[BIN_ALIAS]
 
@@ -398,7 +409,7 @@ function flagbox () {
                     NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
                       | tr '1' "${FLAGBOX_SYMB2}")"
                     alias "${NAME}"="flagbox --chain ${B}"
-                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
+                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
                   fi
                 done
                 unset BIN

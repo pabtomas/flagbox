@@ -142,7 +142,7 @@ FLAGBOX_SYMB1=","
 FLAGBOX_SYMB2="?"
 
 # If true, flagbox will generate aliases with FLAGBOX_SYMB1 and
-# FLAGBOX_SYMB2 variables when flagbox.sh is sourced
+# FLAGBOX_SYMB2 variables when flagbox is sourced
 FLAGBOX_ALIASES=true
 
 # If true, flagbox will generate decimal aliases instead of binary aliases for

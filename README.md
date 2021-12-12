@@ -72,8 +72,8 @@ If you want to learn about advanced features, you can read the
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
 2. `mkdir -p ${HOME}/.local/bin/`
-3. `cp flagbox/flagbox.sh ${HOME}/.local/bin/`
-4. add `source ${HOME}/.local/bin/flagbox.sh` into `~/.bashrc`
+3. `cp flagbox/flagbox ${HOME}/.local/bin/`
+4. add `source ${HOME}/.local/bin/flagbox` into `~/.bashrc`
 5. `source ~/.bashrc`
 
 ## Contribution

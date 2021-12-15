@@ -87,7 +87,7 @@ flagbox () {
 
 # Options {{{1
 
-  local SOURCE=false
+  local SOURCE="false"
   local CHAIN=""
   local FILE=""
 
@@ -95,7 +95,7 @@ flagbox () {
   declare -r PROHIBITED_KEY='.!#%'
 
   if [[ ${#} -eq 0 ]]; then
-    SOURCE=true
+    SOURCE="true"
   elif [[ ${#} -eq 2 && "${1}" == "--chain" \
     && ${#2} -le ${FLAGBOX_SIZE} \
     && "x$(strip_all "${2}" '[01]')" == "x" ]]; then
@@ -122,7 +122,7 @@ flagbox () {
 
     if [[ -v FLAGBOX[BIN_ALIAS] ]]; then
       for A in ${FLAGBOX[BIN_ALIAS]}; do
-        if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
+        if [[ $(lines <(alias "${A}" 2> /dev/null)) -eq 1 ]]; then
           unalias "${A}"
         fi
       done
@@ -130,7 +130,7 @@ flagbox () {
 
     if [[ -v FLAGBOX[ALIAS] ]]; then
       for A in ${FLAGBOX[ALIAS]}; do
-        if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
+        if [[ $(lines <(alias "${A}" 2> /dev/null)) -eq 1 ]]; then
           unalias "${A}"
         fi
       done
@@ -141,17 +141,17 @@ flagbox () {
     declare -r DEFAULT_SIZE=3
     declare -r DEFAULT_KEY1=","
     declare -r DEFAULT_KEY2="?"
-    declare -r DEFAULT_ALIASES=true
-    declare -r DEFAULT_DECIMAL_NAVMODE=false
-    declare -r DEFAULT_BACKUPCONFIRM=true
-    declare -r DEFAULT_VINSERT=false
-    declare -r DEFAULT_VNAV=true
-    declare -r DEFAULT_VRESET=false
-    declare -r DEFAULT_VRESTORE=true
-    declare -r DEFAULT_FOLDLISTING=false
+    declare -r DEFAULT_ALIASES="true"
+    declare -r DEFAULT_DECIMAL_NAVMODE="false"
+    declare -r DEFAULT_BACKUPCONFIRM="true"
+    declare -r DEFAULT_VINSERT="false"
+    declare -r DEFAULT_VNAV="true"
+    declare -r DEFAULT_VRESET="false"
+    declare -r DEFAULT_VRESTORE="true"
+    declare -r DEFAULT_FOLDLISTING="false"
 
-    FLAGBOX_KEY1=${FLAGBOX_KEY1:=${DEFAULT_KEY1}}
-    FLAGBOX_KEY2=${FLAGBOX_KEY2:=${DEFAULT_KEY2}}
+    FLAGBOX_KEY1="${FLAGBOX_KEY1:=${DEFAULT_KEY1}}"
+    FLAGBOX_KEY2="${FLAGBOX_KEY2:=${DEFAULT_KEY2}}"
 
 #   }}}
 
@@ -392,7 +392,7 @@ flagbox () {
 
               if [[ "${FLAGBOX_ALIASES}" == "true" ]]; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
+                  if [[ $(lines <(alias "${A}" 2> /dev/null)) -eq 1 ]]; then
                     unalias "${A}"
                   fi
                 done
@@ -439,7 +439,7 @@ flagbox () {
 
               if [[ "${FLAGBOX_ALIASES}" == "true" ]]; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
+                  if [[ $(lines <(alias "${A}" 2> /dev/null)) -eq 1 ]]; then
                     unalias "${A}"
                   fi
                 done
@@ -491,7 +491,7 @@ flagbox () {
     elif [[ ${#CHAIN} -eq ${FLAGBOX_SIZE} ]]; then
       local DECIMAL=1
       local CONCAT=""
-      local BOX_DELETED=false
+      local BOX_DELETED="false"
 
 #     EDITION mode {{{3
 
@@ -511,7 +511,7 @@ flagbox () {
             done
             (( FLAGBOX[MAX]-=1 ))
             [[ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ]] && (( FLAGBOX[BOX]-=1 ))
-            BOX_DELETED=true
+            BOX_DELETED="true"
           fi
         fi
 

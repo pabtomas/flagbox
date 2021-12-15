@@ -1,16 +1,16 @@
-# Flagbox - a 2-keys marks manager for Bash
+# Flagbox - a 2-keys bookmarks written in bash
 
 </br>
 <img src="/media/weirdcommands.png">
 </br>
 
-Did you ever see those typed commands in a terminal? Whatever your answer, I
-am convinced that you find it ambiguous and not friendly-user. You are right:
-*Flagbox* was not conceived with friendly-usage in mind. It was conceived for
-efficiency. For this purpose friendly-user aspect was not a priority during
-*Flagbox* conception. If you are searching a tool which allows you to make a
-similar job with a more friendly usage, you can go to the **Credit section**.
-Most of them inspired the creation of *Flagbox*.
+Did you ever see those typed commands in a terminal before? Whatever your
+answer, I am convinced that you find it ambiguous and not friendly-user. You
+are right: *Flagbox* was not conceived with friendly-usage in mind. It was
+conceived for user efficiency. For this purpose friendly-user aspect was not a
+priority during *Flagbox* conception. If you are searching a tool which allows
+you to make a similar job with a more friendly usage, you can go to the
+**Credit section**. Most of them inspired the creation of *Flagbox*.
 
 *Flagbox* is a mark manager. It allows you to save the directory you are in
 and jump it later.
@@ -37,7 +37,7 @@ Now if you are changing directory (exemple: `/tmp` directory) and you are
 typing `,`, you will come back to the directory pointed by `,` mark. **Full
 comma aliases** are used by *Flagbox* to save directory and jump it later.
 By default, you can save up to 3 marks in a box (`,`, `,,` and `,,,` marks).
-You can change this setting in your `.flagbox.conf` file.
+You can change this setting later.
 
 What now if you want to erase a mark that you will not use anymore? *Flagbox*
 generates resetting aliases for this purpose. Let's assume that your current
@@ -71,10 +71,20 @@ If you want to learn about advanced features, you can read the
 ## Installation
 
 1. `git clone https://github.com/pabtomas/flagbox.git`
-2. `mkdir -p ${HOME}/.local/bin/`
-3. `cp flagbox/flagbox ${HOME}/.local/bin/`
-4. add `source ${HOME}/.local/bin/flagbox` into `~/.bashrc`
-5. `source ~/.bashrc`
+2. copy `flagbox/flagbox` in your `$PATH`:
+```
+mkdir -p ${HOME}/.local/bin/
+cp flagbox/flagbox ${HOME}/.local/bin/
+
+# You can put this line in your profile if you do not want write it each time
+# you open a new terminal:
+export PATH=${HOME}/.local/bin:${PATH}
+```
+Now you can use flagbox with default configuration after a simple run:
+`flagbox`
+
+Extra step if you want use flagbox after launching your terminal:
+5. add `source $(which flagbox)` into `~/.bashrc`
 
 ## Contribution
 

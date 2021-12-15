@@ -122,27 +122,27 @@ come back to *Edition Mode*.
 ## Configuration
 
 It is possible to configure *Flagbox* behaviors with environment variables.
-These environments variables have to be defined in your home directory in a
-`.flagbox.conf` file. If you need to configure an unavailable *Flagbox*
-behavior, here are the [instructions to request a feature](https://github.com/pabtomas/flagbox/blob/master/CONTRIBUTING.md).
-This repository contains a [.flagbox.conf with default settings](https://github.com/pabtomas/flagbox/blob/master/.flagbox.conf)
+These environments variables have to be defined in your `profile`. If you need
+to configure an unavailable *Flagbox* behavior, here are the
+[instructions to request a feature](https://github.com/pabtomas/flagbox/blob/master/CONTRIBUTING.md).
+This repository contains a [.flagbox.conf with default settings](https://github.com/pabtomas/flagbox/blob/master/flagbox.1)
 with a minimal description for each available environment variables. You can
-tweek those variables to get the *FLagbox* behavior you need. Here the content
+tweek those variables to get the *Flagbox* behavior you need. Here the content
 of this file:
 ```
-# Put this file in your HOME and feel free to custom options to fit your needs
+# Put these variables in your profile and feel free to custom it to fit your needs
 
 # How many flags in a box?
 FLAGBOX_SIZE=3
 
 # First key
-FLAGBOX_SYMB1=","
+FLAGBOX_KEY1=","
 
 # Second key
-FLAGBOX_SYMB2="?"
+FLAGBOX_KEY2="?"
 
-# If true, flagbox will generate aliases with FLAGBOX_SYMB1 and
-# FLAGBOX_SYMB2 variables when flagbox is sourced
+# If true, flagbox will generate aliases with FLAGBOX_KEY1 and
+# FLAGBOX_KEY2 variables when flagbox is sourced
 FLAGBOX_ALIASES=true
 
 # If true, flagbox will generate decimal aliases instead of binary aliases for
@@ -171,12 +171,12 @@ FLAGBOX_FOLDLISTING=false
 
 </br>`FLAGBOX_SIZE` is a positive integer and must be at least 3.
 
-`FLAGBOX_SYMB1` and `FLAGBOX_SYMB2` must:
+`FLAGBOX_KEY1` and `FLAGBOX_KEY2` must:
 1. be a single character not contained by this string: `.!#%`,
 2. not be a digit character if you set `FLAGBOX_DECIMAL_NAVMODE` to true,
 3. be different characters,
-4. not hide a defined alias/command alone or in a mix. (if `FLAGBOX_SYMB1="l"`
-and `FLAGBOX_SYMB2="s"`, mixing those two variables will hide `ls` system
+4. not hide a defined alias/command alone or in a mix. (if `FLAGBOX_KEY1="l"`
+and `FLAGBOX_KEY2="s"`, mixing those two variables will hide `ls` system
 command).
 
 Other environment variables are booleans.

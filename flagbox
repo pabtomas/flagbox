@@ -1,51 +1,128 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-function flagbox () {
+# TODO: help
+
+# http://phodd.net/gnu-bc/bcfaq.html#bashlog
+log () {
+  local X=${2}
+  local BASE=${1}
+  local L=-1
+  while ((X)); do
+    (( L+=1 ))
+    (( X/=${BASE} ))
+  done
+  echo ${L}
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#use-regex-on-a-string
+escaped_exact_regex () {
+  local ESC=$(while IFS=$'\n' read -n1 CHAR; \
+    do printf "\\%s" "${CHAR}"; done < <(echo -n "${2}"))
+  local REG="^(${ESC})$|^(${ESC})["$'\n'"]|["$'\n'"](${ESC})$|["$'\n'"](${ESC})["$'\n'"]"
+  [[ "${1}" =~ ${REG} ]] && printf '%s\n' "${BASH_REMATCH[1]:-${BASH_REMATCH[2]:-${BASH_REMATCH[3]:-${BASH_REMATCH[4]}}}}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#remove-duplicate-array-elements
+unique () {
+  declare -A TMP_ARRAY
+
+  for I in "$@"; do
+    [[ ${I} ]] && IFS=" " TMP_ARRAY["${I:- }"]=1
+  done
+
+  printf '%s\n' "${!TMP_ARRAY[@]}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#get-the-directory-name-of-a-file-path
+direc () {
+  local TMP=${1:-.}
+
+  [[ ${TMP} != *[!/]* ]] && {
+    printf '/\n'
+    return
+  }
+
+  TMP=${TMP%%"${TMP##*[!/]}"}
+
+  [[ ${TMP} != */* ]] && {
+    printf '.\n'
+    return
+  }
+
+  TMP=${TMP%/*}
+  TMP=${TMP%%"${TMP##*[!/]}"}
+
+  printf '%s\n' "${TMP:-/}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#get-the-base-name-of-a-file-path
+base () {
+  local TMP
+
+  TMP=${1%"${1##*[!/]}"}
+  TMP=${TMP##*/}
+  TMP=${TMP%"${2/"$TMP"}"}
+
+  printf '%s\n' "${TMP:-/}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#get-the-number-of-lines-in-a-file
+lines () {
+  mapfile -t -n 0 FILE_LINES < "${1}"
+  printf '%s\n' "${#FILE_LINES[@]}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#strip-all-instances-of-pattern-from-string
+strip_all () {
+  printf '%s\n' "${1//${2}}"
+}
+
+# https://github.com/dylanaraps/pure-bash-bible/blob/master/README.md#split-a-string-on-a-delimiter
+split () {
+  IFS=$'\n' read -d "" -ra ARR <<< "${1//${2}/$'\n'}"
+  printf '%s\n' "${ARR[@]}"
+}
+
+flagbox () {
 
 # Options {{{1
-
-  if [[ "x${1}" == "x" ]]; then
-    echo "help" >&2
-    return 1
-  fi
 
   local SOURCE=false
   local CHAIN=""
   local FILE=""
 
   declare -r FILE_AUTHORIZED='a-zA-Z0-9/_.~\-'
-  declare -r PROHIBITED_SYMB='.!#%'
+  declare -r PROHIBITED_KEY='.!#%'
 
-  if [[ ${#} -eq 1 && "${1}" == "--source" ]]; then
+  if [[ ${#} -eq 0 ]]; then
     SOURCE=true
   elif [[ ${#} -eq 2 && "${1}" == "--chain" \
     && ${#2} -le ${FLAGBOX_SIZE} \
-    && "x$(printf "${2}" | tr -d '[01]')" == "x" ]]; then
+    && "x$(strip_all "${2}" '[01]')" == "x" ]]; then
       CHAIN="${2}"
   elif [[ ${#} -eq 3 && "${1}" == "--chain" && "${2}" == "11" \
-    && "x$(print "${3}" | tr -d "[${FILE_AUTHORIZED}]")" == "x" ]]; then
+    && "x$(strip_all "${3}" "[${FILE_AUTHORIZED}]")" == "x" ]]; then
       CHAIN="11"
       FILE="${3}"
   else
-    echo "help" >&2
+    echo -e "help" >&2
     return 1
   fi
 
 # }}}
 
-  declare -r RED=$(tput setaf 1)
-  declare -r GREEN=$(tput setaf 2)
-  declare -r YELLOW=$(tput setaf 3)
-  declare -r REVERSE=$(tput setaf 0)$(tput setab 7)$(tput bold)
-  declare -r RESET=$(tput sgr0)
+  declare -r RED="\e[38;5;1m"
+  declare -r GREEN="\e[38;5;2m"
+  declare -r YELLOW="\e[38;5;3m"
+  declare -r REVERSE="\e[38;5;0m\e[48;5;7m\e[1m"
+  declare -r RESET="\e[m"
 
-  if ${SOURCE}; then
-# --source {{{1
+  if [[ "${SOURCE}" == "true" ]]; then
+# Sourcing {{{1
 
     if [[ -v FLAGBOX[BIN_ALIAS] ]]; then
       for A in ${FLAGBOX[BIN_ALIAS]}; do
-        A=$(eval "echo ${A}")
-        if [[ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]]; then
+        if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
           unalias "${A}"
         fi
       done
@@ -53,7 +130,7 @@ function flagbox () {
 
     if [[ -v FLAGBOX[ALIAS] ]]; then
       for A in ${FLAGBOX[ALIAS]}; do
-        if [[ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]]; then
+        if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
           unalias "${A}"
         fi
       done
@@ -62,8 +139,8 @@ function flagbox () {
 #   Default user variables {{{2
 
     declare -r DEFAULT_SIZE=3
-    declare -r DEFAULT_SYMB1=","
-    declare -r DEFAULT_SYMB2="?"
+    declare -r DEFAULT_KEY1=","
+    declare -r DEFAULT_KEY2="?"
     declare -r DEFAULT_ALIASES=true
     declare -r DEFAULT_DECIMAL_NAVMODE=false
     declare -r DEFAULT_BACKUPCONFIRM=true
@@ -73,62 +150,8 @@ function flagbox () {
     declare -r DEFAULT_VRESTORE=true
     declare -r DEFAULT_FOLDLISTING=false
 
-    if [[ ! -v FLAGBOX_SIZE || "x$(printf "${FLAGBOX_SIZE}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_SIZE=${DEFAULT_SIZE}
-    fi
-
-    if [[ ! -v FLAGBOX_SYMB1 || "x$(printf "${FLAGBOX_SYMB1}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_SYMB1="${DEFAULT_SYMB1}"
-    fi
-
-    if [[ ! -v FLAGBOX_SYMB2 || "x$(printf "${FLAGBOX_SYMB2}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_SYMB2="${DEFAULT_SYMB2}"
-    fi
-
-    if [[ ! -v FLAGBOX_ALIASES || "x$(printf "${FLAGBOX_ALIASES}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_ALIASES=${DEFAULT_ALIASES}
-    fi
-
-    if [[ ! -v FLAGBOX_DECIMAL_NAVMODE \
-      || "x$(printf "${FLAGBOX_DECIMAL_NAVMODE}" \
-        | tr -d '[[:space:]]')" == "x" ]]; then
-          FLAGBOX_DECIMAL_NAVMODE=${DEFAULT_DECIMAL_NAVMODE}
-    fi
-
-    if [[ ! -v FLAGBOX_BACKUPCONFIRM \
-      || "x$(printf "${FLAGBOX_BACKUPCONFIRM}" \
-        | tr -d '[[:space:]]')" == "x" ]]; then
-          FLAGBOX_BACKUPCONFIRM=${DEFAULT_BACKUPCONFIRM}
-    fi
-
-    if [[ ! -v FLAGBOX_VINSERT || "x$(printf "${FLAGBOX_VINSERT}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_VINSERT=${DEFAULT_VINSERT}
-    fi
-
-    if [[ ! -v FLAGBOX_VNAV || "x$(printf "${FLAGBOX_VNAV}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_VNAV=${DEFAULT_VNAV}
-    fi
-
-    if [[ ! -v FLAGBOX_VRESET || "x$(printf "${FLAGBOX_VRESET}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_VRESET=${DEFAULT_VRESET}
-    fi
-
-    if [[ ! -v FLAGBOX_VRESTORE || "x$(printf "${FLAGBOX_VRESTORE}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_VRESTORE=${DEFAULT_VRESTORE}
-    fi
-
-    if [[ ! -v FLAGBOX_FOLDLISTING || "x$(printf "${FLAGBOX_FOLDLISTING}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        FLAGBOX_FOLDLISTING=${DEFAULT_FOLDLISTING}
-    fi
+    FLAGBOX_KEY1=${FLAGBOX_KEY1:=${DEFAULT_KEY1}}
+    FLAGBOX_KEY2=${FLAGBOX_KEY2:=${DEFAULT_KEY2}}
 
 #   }}}
 
@@ -136,127 +159,127 @@ function flagbox () {
 
 #   Check user variables {{{2
 
-    if [[ "x$(echo "${FLAGBOX_SIZE}" | tr -d '[0-9]')" != "x" ]]; then
-      echo "FLAGBOX_SIZE ${RED}has to be a positive integer${RESET}" >&2
-      return 1
+    if [[ "x$(strip_all "${FLAGBOX_SIZE:=${DEFAULT_SIZE}}" '[0-9]')" \
+      != "x" ]]; then
+        echo -e "FLAGBOX_SIZE ${RED}has to be a positive integer${RESET}" >&2
+        return 1
     fi
 
     if [[ ${FLAGBOX_SIZE} -lt 3 ]]; then
-      echo "FLAGBOX_SIZE ${RED}has to be greater or equal to${RESET} 3" >&2
+      echo -e "FLAGBOX_SIZE ${RED}has to be greater or equal to${RESET} 3" >&2
       return 1
     fi
 
-    if [[ ${#FLAGBOX_SYMB1} -ne 1 ]]; then
-      echo "FLAGBOX_SYMB1 ${RED}must be a single character${RESET}" >&2
+    if [[ ${#FLAGBOX_KEY1} -ne 1 ]]; then
+      echo -e "FLAGBOX_KEY1 ${RED}must be a single character${RESET}" >&2
       return 1
     fi
 
-    if [[ "x$(printf "${FLAGBOX_SYMB1}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        echo "FLAGBOX_SYMB1 ${RED}must be different than a space character" >&2
-        return 1
+    if [[ "x$(strip_all "${FLAGBOX_KEY1}" '[[:space:]]')" == "x" ]]; then
+      echo -e "FLAGBOX_KEY1 ${RED}must be different than a space character" >&2
+      return 1
     fi
 
-    if [[ "x$(printf "${FLAGBOX_SYMB1}" \
-      | tr -d "[${PROHIBITED_SYMB}]")" == "x" ]]; then
-        echo "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_SYMB1${YELLOW} or ${RESET}FLAGBOX_SYMB2${YELLOW}:${RESET} ${PROHIBITED_SYMB}"
+    if [[ "x$(strip_all "${FLAGBOX_KEY1}" "[${PROHIBITED_KEY}]")" \
+      == "x" ]]; then
+        echo -e "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_KEY1${YELLOW} or ${RESET}FLAGBOX_KEY2${YELLOW}:${RESET} ${PROHIBITED_KEY}"
+    fi
+
+    if [[ "${FLAGBOX_DECIMAL_NAVMODE:=${DEFAULT_DECIMAL_NAVMODE}}" == "true" \
+      && "x$(strip_all "${FLAGBOX_KEY1}" "[0-9]")" == "x" ]]; then
+        echo -e "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_KEY1 ${RED}can not be a digit character${RESET}" >&2
+    fi
+
+    if [[ ${#FLAGBOX_KEY2} -ne 1 ]]; then
+      echo -e "FLAGBOX_KEY2 ${RED}must be a single character${RESET}" >&2
+      return 1
+    fi
+
+    if [[ "x$(strip_all "${FLAGBOX_KEY2}" '[[:space:]]')" == "x" ]]; then
+      echo -e "FLAGBOX_KEY2 ${RED}must be different than a space character" >&2
+      return 1
+    fi
+
+    if [[ "x$(strip_all "${FLAGBOX_KEY2}" "[${PROHIBITED_KEY}]")" \
+      == "x" ]]; then
+        echo -e "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_KEY2${YELLOW} or ${RESET}FLAGBOX_KEY2${YELLOW}:${RESET} ${PROHIBITED_KEY}"
     fi
 
     if [[ "${FLAGBOX_DECIMAL_NAVMODE}" == "true" \
-      && "x$(printf "${FLAGBOX_SYMB1}" | tr -d "[0-9]")" == "x" ]]; then
-        echo "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_SYMB1 ${RED}can not be a digit character${RESET}" >&2
+      && "x$(strip_all "${FLAGBOX_KEY2}" "[0-9]")" == "x" ]]; then
+        echo -e "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_KEY2 ${RED}can not be a digit character${RESET}" >&2
     fi
 
-    if [[ ${#FLAGBOX_SYMB2} -ne 1 ]]; then
-      echo "FLAGBOX_SYMB2 ${RED}must be a single character${RESET}" >&2
+    if [[ "${FLAGBOX_KEY1}" == "${FLAGBOX_KEY2}" ]]; then
+      echo -e "FLAGBOX_KEY2 ${RED}and${RESET} FLAGBOX_KEY1 ${RED}have to be different${RESET}" >&2
       return 1
     fi
 
-    if [[ "x$(printf "${FLAGBOX_SYMB2}" \
-      | tr -d '[[:space:]]')" == "x" ]]; then
-        echo "FLAGBOX_SYMB2 ${RED}must be different than a space character" >&2
-        return 1
-    fi
-
-    if [[ "x$(printf "${FLAGBOX_SYMB2}" \
-      | tr -d "[${PROHIBITED_SYMB}]")" == "x" ]]; then
-        echo "${YELLOW}Your are highly discouraged to use one of those characters for ${RESET}FLAGBOX_SYMB2${YELLOW} or ${RESET}FLAGBOX_SYMB2${YELLOW}:${RESET} ${PROHIBITED_SYMB}"
-    fi
-
-    if [[ "${FLAGBOX_DECIMAL_NAVMODE}" == "true" \
-      && "x$(printf "${FLAGBOX_SYMB2}" | tr -d "[0-9]")" == "x" ]]; then
-        echo "${RED}if${RESET} FLAGBOX_DECIMAL_NAVMODE ${RED}is${RESET} true ${RED},${RESET} FLAGBOX_SYMB2 ${RED}can not be a digit character${RESET}" >&2
-    fi
-
-    if [[ "${FLAGBOX_SYMB1}" == "${FLAGBOX_SYMB2}" ]]; then
-      echo "FLAGBOX_SYMB2 ${RED}and${RESET} FLAGBOX_SYMB1 ${RED}have to be different${RESET}" >&2
-      return 1
-    fi
-
-    declare -a BIN=( $(I=0; \
-      while true; do \
-        J="$(perl -e 'printf("%b\n",'${I}')')"; \
-        if [[ ${#J} -gt ${FLAGBOX_SIZE} ]]; then \
-          break; \
-        fi; \
-        echo "$(printf %$(( ${FLAGBOX_SIZE} - ${#J} ))s | tr ' ' '0')$J"; \
+    declare -a BIN=( $(I=1; J=$(echo {0..1}); \
+      while [[ ${I} -lt ${FLAGBOX_SIZE} ]]; do \
+        J=$(for K in ${J}; do split "$(echo ${K}{0..1})" ' '; done); \
         (( I+=1 )); \
-      done) )
+      done; echo "${J}") )
 
-    local DUP=$(echo -e "$(compgen -c \
-      | sort -u)\n$(printf "0 1 00 01 10 11 ${BIN[@]}" \
-      | tr '0' "${FLAGBOX_SYMB1}" | tr '1' "${FLAGBOX_SYMB2}" \
-      | tr ' ' '\n')" | sort | uniq -d)
+    local CHAINS="0 1 00 01 10 11"
+    CHAINS="${CHAINS//0/${FLAGBOX_KEY1}}"
+    CHAINS="${CHAINS//1/${FLAGBOX_KEY2}}"
+    CHAINS="${CHAINS} ${BIN[@]}"
+    mapfile -t -n 0 COMP < <(compgen -c)
+    COMP=$(unique ${COMP[@]})
+    local DUP=""
+    for ALIAS_CHAIN in ${CHAINS}; do
+      DUP=$(escaped_exact_regex "${COMP}" "${ALIAS_CHAIN}")
+      if [[ ${#DUP} -gt 0 ]]; then
+        echo -e "${YELLOW}Your are highly discouraged to use those characters for${RESET} FLAGBOX_KEY1 ${YELLOW}and${RESET} FLAGBOX_KEY2${YELLOW}. Generating aliases with those characters will hide this command:${RESET}\n${DUP}"
+      fi
+    done
 
-    if [[ ${#DUP} -gt 0 ]]; then
-      echo -e "${YELLOW}Your are highly discouraged to use those characters for${RESET} FLAGBOX_SYMB1 ${YELLOW}and${RESET} FLAGBOX_SYMB2${YELLOW}. Generating aliases with those characters will hide these commands:${RESET}\n${DUP}"
-    fi
-
-    if [[ "${FLAGBOX_ALIASES}" != "false" \
+    if [[ "${FLAGBOX_ALIASES:=${DEFAULT_ALIASES}}" != "false" \
       && "${FLAGBOX_ALIASES}" != "true" ]]; then
-        echo "FLAGBOX_ALIASES ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_ALIASES ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
     if [[ "${FLAGBOX_DECIMAL_NAVMODE}" != "false" \
       && "${FLAGBOX_DECIMAL_NAVMODE}" != "true" ]]; then
-        echo "FLAGBOX_DECIMAL_NAVMODE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_DECIMAL_NAVMODE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_BACKUPCONFIRM}" != "false" \
+    if [[ "${FLAGBOX_BACKUPCONFIRM:=${DEFAULT_BACKUPCONFIRM}}" != "false" \
       && "${FLAGBOX_BACKUPCONFIRM}" != "true" ]]; then
-        echo "FLAGBOX_BACKUPCONFIRM ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_BACKUPCONFIRM ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_VINSERT}" != "false" \
+    if [[ "${FLAGBOX_VINSERT:=${DEFAULT_VINSERT}}" != "false" \
       && "${FLAGBOX_VINSERT}" != "true" ]]; then
-        echo "FLAGBOX_VINSERT ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_VINSERT ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_VNAV}" != "false" \
+    if [[ "${FLAGBOX_VNAV:=${DEFAULT_VNAV}}" != "false" \
       && "${FLAGBOX_VNAV}" != "true" ]]; then
-        echo "FLAGBOX_VNAV ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_VNAV ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_VRESET}" != "false" \
+    if [[ "${FLAGBOX_VRESET:=${DEFAULT_VRESET}}" != "false" \
       && "${FLAGBOX_VRESET}" != "true" ]]; then
-        echo "FLAGBOX_VRESET ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_VRESET ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_VRESTORE}" != "false" \
+    if [[ "${FLAGBOX_VRESTORE:=${DEFAULT_VRESTORE}}" != "false" \
       && "${FLAGBOX_VRESTORE}" != "true" ]]; then
-        echo "FLAGBOX_VRESTORE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_VRESTORE ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
-    if [[ "${FLAGBOX_FOLDLISTING}" != "false" \
+    if [[ "${FLAGBOX_FOLDLISTING:=${DEFAULT_FOLDLISTING}}" != "false" \
       && "${FLAGBOX_FOLDLISTING}" != "true" ]]; then
-        echo "FLAGBOX_FOLDLISTING ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
+        echo -e "FLAGBOX_FOLDLISTING ${RED}should be${RESET} true ${RED}or${RESET} false" >&2
         return 1
     fi
 
@@ -269,44 +292,80 @@ function flagbox () {
       FLAGBOX[MODE]="EDIT"
       FLAGBOX[ALIAS]=""
       FLAGBOX[BIN_ALIAS]=""
-      for I in $(seq 1 ${FLAGBOX_SIZE}); do
+      for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
         FLAGBOX[1,${I}]=''
       done
     fi
 
 #   Generate aliases {{{2
 
-    if ${FLAGBOX_ALIASES}; then
-      for I in $(seq 1 ${FLAGBOX_SIZE}); do
-        NAME="$(printf %${I}s | tr ' ' "${FLAGBOX_SYMB1}")"
-        alias "${NAME}"="flagbox --chain $(printf %${I}s | tr ' ' '0')"
+    local ALIAS_CHAIN=""
+    if [[ "${FLAGBOX_ALIASES}" == "true" ]]; then
+      for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
+        NAME="$(printf %${I}s)"
+        NAME="${NAME//[[:space:]]/${FLAGBOX_KEY1}}"
+        ALIAS_CHAIN=$(printf %${I}s)
+        ALIAS_CHAIN=${ALIAS_CHAIN//[[:space:]]/0}
+        alias "${NAME}"="flagbox --chain ${ALIAS_CHAIN}"
         FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${NAME}"
       done
 
       for B in ${BIN[@]}; do
         if [[ ${B} -gt 0 ]]; then
-          NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
-            | tr '1' "${FLAGBOX_SYMB2}")"
+          NAME="$(printf "${B}")"
+          NAME="${NAME//0/${FLAGBOX_KEY1}}"
+          NAME="${NAME//1/${FLAGBOX_KEY2}}"
           alias "${NAME}"="flagbox --chain ${B}"
-          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
+          FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
         fi
       done
 
-      alias "${FLAGBOX_SYMB2}"="flagbox --chain 1"
-      alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"="flagbox --chain 11"
-      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}"
-      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB2}"
+      alias "${FLAGBOX_KEY2}"="flagbox --chain 1"
+      alias "${FLAGBOX_KEY2}${FLAGBOX_KEY2}"="flagbox --chain 11"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_KEY2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_KEY2}${FLAGBOX_KEY2}"
 
-      alias "${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"="flagbox --chain 01"
-      alias "${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"="flagbox --chain 10"
-      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB1}${FLAGBOX_SYMB2}"
-      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_SYMB2}${FLAGBOX_SYMB1}"
+      alias "${FLAGBOX_KEY1}${FLAGBOX_KEY2}"="flagbox --chain 01"
+      alias "${FLAGBOX_KEY2}${FLAGBOX_KEY1}"="flagbox --chain 10"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_KEY1}${FLAGBOX_KEY2}"
+      FLAGBOX[ALIAS]="${FLAGBOX[ALIAS]} ${FLAGBOX_KEY2}${FLAGBOX_KEY1}"
     fi
 
 #   }}}
 
-    unset BIN NAME DUP QUOTED
+    unset BIN NAME DUP QUOTED CHAINS COMP ALIAS_CHAIN
 
+#   ascii drawing {{{2
+
+    echo -e '\n   .xXEa.           ,:;!;;!:,..\n'\
+'   W@@@@@@    .!/eW@@@@@@@@@@@@Qdy!\n'\
+'   ?Q@@@@O  p@@@@@@@@@@@@@@@@@@@@@@O`\n'\
+"     '"'!Q@6   ?A@@@@@@@@@@@@@@@@@@@@@c     ,!rr+>|\\\\r,\n'\
+"       'Q@m    ,Q@@@@@@@@@@@@@@@@@@@Q- v%@@@@@@@@@@@@Qe>-\n"\
+'        "B@\    :@@@@@@@@@@@@@@@@@@@@d :@@@@@@@@@@@@@@@@@6!\n'\
+"         .Q@^    :Q@@@@@@@@@@@@@@@@@@@8,'"'o@@@@@@@@@@Q3?;!:!'"'\n"\
+"          ,@@:    'Q@@@@@@@@@@@@@@@@@@@@t "'!@@@@@@@@@=,`\n'\
+'           |@@:    v@@@@@@@@@@@@@@@@@@@@@v x@@@@@@@@@@@@Q0As;`\n'\
+'            X@Q,   ,@@@@@@@@@@@@@@@Q##BQ@@: Q@@@@@@@@@@@@@@@@@K|-\n'\
+"             9@Q'"'   @@@@@@@@Q6s=:.` .,, `!/ j@@@@@@@@@@@@@@@@@@@@e-\n'\
+'             `0@#` !@@QKf?:-      u@@@@@B=. z@@@@@@@@@@@Qpyv\+>+-'"'"'`\n'\
+'              .Q@k !>'"'            -N@@@@#+ ,Q@@@@@@@@D7"'"\n'\
+"               :@@|                 |N@@  e@@@@@@@p|-\n"\
+"                ?@@'                  :\ :Q@@@@%/'\n"\
+"                 z@Q-                       "'``\n'\
+'                  p@0`\n'\
+'    ad88 88       `%@O-            88\n'\
+'   d8"   88        `Q@B-           88\n'\
+'   88    88          ^iO-          88\n'\
+" MM88MMM 88 ,adPPYYba,  ,adPPYb,d8 88,dPPYba,   ,adPPYba, 8b,     ,d8\n"\
+'   88    88 ""     `Y8 a8"    `Y88 88P'"'"'    "8a a8"     "8a `Y8, ,8P'"'\n"\
+'   88    88 ,adPPPPP88 8b       88 88       d8 8b       d8   )888(\n'\
+'   88    88 88,    ,88 "8a,   ,d88 88b,   ,a8" "8a,   ,a8" ,d8" "8b,\n'\
+'   88    88 `"8bbdP"Y8  `"YbbdP"Y8 8Y"Ybbd8"'"'"'   `"YbbdP"'"'"' 8P'"'"'     `Y8\n'\
+'                        aa,    ,88\n'\
+'                         "Y8bbdP"\n\nFlagbox - a 2-keys bookmarks written in bash\nhttps://github.com/pabtomas/flagbox'
+
+#   }}}
 # }}}
   else
 # --chain {{{1
@@ -315,12 +374,13 @@ function flagbox () {
     if [[ ${CHAIN} -eq 0 ]]; then
       local NAME=""
       local LENGTH=0
+      local LOG=1
 
       if [[ "x${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" == "x" ]]; then
-        FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=$(realpath .)
-        ${FLAGBOX_VINSERT} && flagbox --chain 1
+        FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]=${PWD}
+        [[ "${FLAGBOX_VINSERT}" == "true" ]] && flagbox --chain 1
       else
-        if [[ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]]; then
+        if [[ "${PWD}" == "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]]; then
 
 #     EDITION mode {{{3
 
@@ -330,10 +390,9 @@ function flagbox () {
 
               FLAGBOX[MODE]="NAV"
 
-              if ${FLAGBOX_ALIASES}; then
+              if [[ "${FLAGBOX_ALIASES}" == "true" ]]; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  A=$(eval "echo ${A}")
-                  if [[ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]]; then
+                  if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
                     unalias "${A}"
                   fi
                 done
@@ -341,27 +400,23 @@ function flagbox () {
 
 #         Generate NAVIGATION mode aliases {{{5
 
-                LENGTH=$(echo -e "3\n$(echo \
-                  | awk '{ printf("%0.f", log('"${FLAGBOX[MAX]}"')/log(2)) }')" \
-                  | sort -n -r | head -n 1)
-                declare -a BIN=( $(I=0; \
-                  while true; do \
-                    J="$(perl -e 'printf("%b\n",'${I}')')"; \
-                    if [[ ${#J} -gt ${LENGTH} ]]; then \
-                      break; \
-                    fi; \
-                    echo "$(printf %$(( ${LENGTH} - ${#J} ))s | tr ' ' '0')$J"; \
+                LOG=$(log 2 ${FLAGBOX[MAX]})
+                LENGTH=$(( 3 > ${LOG} ? 3 : ${LOG} ))
+                declare -a BIN=( $(I=1; J=$(echo {0..1}); \
+                  while [[ ${I} -lt ${FLAGBOX_SIZE} ]]; do \
+                    J=$(for K in ${J}; do split "$(echo ${K}{0..1})" ' '; done); \
                     (( I+=1 )); \
-                  done) )
-                for I in $(seq 1 ${FLAGBOX[MAX]}); do
-                  if ${FLAGBOX_DECIMAL_NAVMODE}; then
+                  done; echo "${J}") )
+                for ((I=1;I<=${FLAGBOX[MAX]};I++)); do
+                  if [[ "${FLAGBOX_DECIMAL_NAVMODE}" == "true" ]]; then
                     NAME="${I}"
                   else
-                    NAME="$(printf "${BIN[${I}]}" | tr '0' "${FLAGBOX_SYMB1}" \
-                      | tr '1' "${FLAGBOX_SYMB2}")"
+                    NAME="$(printf "${BIN[${I}]}")"
+                    NAME="${NAME//0/${FLAGBOX_KEY1}}"
+                    NAME="${NAME//1/${FLAGBOX_KEY2}}"
                   fi
                   alias "${NAME}"="flagbox --chain ${BIN[${I}]}"
-                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
+                  FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                 done
                 unset BIN
 
@@ -371,7 +426,7 @@ function flagbox () {
 
 #       }}}
 
-              echo "NAVIGATION${GREEN} mode used${RESET}"
+              echo -e "NAVIGATION${GREEN} mode used${RESET}"
 
 #     }}}
 #     NAVIGATION mode {{{3
@@ -382,10 +437,9 @@ function flagbox () {
 
               FLAGBOX[MODE]="EDIT"
 
-              if ${FLAGBOX_ALIASES}; then
+              if [[ "${FLAGBOX_ALIASES}" == "true" ]]; then
                 for A in ${FLAGBOX[BIN_ALIAS]}; do
-                  A=$(eval "echo ${A}")
-                  if [[ $(alias | grep -E "^alias ${A}='" | wc -l) -eq 1 ]]; then
+                  if [[ $(lines <(alias ${A} 2> /dev/null)) -eq 1 ]]; then
                     unalias "${A}"
                   fi
                 done
@@ -393,22 +447,18 @@ function flagbox () {
 
 #         Generate EDITION mode aliases {{{5
 
-                declare -a BIN=( $(I=0; \
-                  while true; do \
-                    J="$(perl -e 'printf("%b\n",'${I}')')"; \
-                    if [[ ${#J} -gt ${FLAGBOX_SIZE} ]]; then \
-                      break; \
-                    fi; \
-                    echo "$(printf %$(( ${FLAGBOX_SIZE} - ${#J} ))s \
-                      | tr ' ' '0')$J"; \
+                declare -a BIN=( $(I=1; J=$(echo {0..1}); \
+                  while [[ ${I} -lt ${FLAGBOX_SIZE} ]]; do \
+                    J=$(for K in ${J}; do split "$(echo ${K}{0..1})" ' '; done); \
                     (( I+=1 )); \
-                  done) )
+                  done; echo "${J}") )
                 for B in ${BIN[@]}; do
                   if [[ ${B} -gt 0 ]]; then
-                    NAME="$(printf "${B}" | tr '0' "${FLAGBOX_SYMB1}" \
-                      | tr '1' "${FLAGBOX_SYMB2}")"
+                    NAME="$(printf "${B}")"
+                    NAME="${NAME//0/${FLAGBOX_KEY1}}"
+                    NAME="${NAME//1/${FLAGBOX_KEY2}}"
                     alias "${NAME}"="flagbox --chain ${B}"
-                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} \\${NAME}"
+                    FLAGBOX[BIN_ALIAS]="${FLAGBOX[BIN_ALIAS]} ${NAME}"
                   fi
                 done
                 unset BIN
@@ -419,21 +469,21 @@ function flagbox () {
 
 #       }}}
 
-              echo "EDITION${GREEN} mode used${RESET}"
+              echo -e "EDITION${GREEN} mode used${RESET}"
             fi
 
 #     }}}
 
         else
-          if [[ -d ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]} ]]; then
+          if [[ -d "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]]; then
             cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
           else
-            echo "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
+            echo -e "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
           fi
         fi
       fi
 
-      unset LENGTH NAME
+      unset LENGTH NAME LOG
 
 #   }}}
 #   Binary chains {{{2
@@ -446,34 +496,33 @@ function flagbox () {
 #     EDITION mode {{{3
 
       if [[ "${FLAGBOX[MODE]}" == "EDIT" ]]; then
-        if [[ $(echo "${CHAIN}" | grep -x -E "1+" | wc -l) -eq 1 \
-          && ${FLAGBOX[MAX]} -gt 1 ]]; then
-            for I in $(seq 1 ${FLAGBOX_SIZE}); do
-              CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+        if [[ "${CHAIN}" =~ ^1+$ && ${FLAGBOX[MAX]} -gt 1 ]]; then
+          for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
+            CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+          done
+          if [[ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]]; then
+            for ((I=$(( ${BOX} + 1 ));I<=${MAX};I++)); do
+              for ((J=1;J<=${FLAGBOX_SIZE};J++)); do
+                FLAGBOX[$(( ${I} - 1 )),${J}]=${FLAGBOX[${I},${J}]}
+              done
             done
-            if [[ ${#CONCAT} -eq ${FLAGBOX_SIZE} ]]; then
-              for I in $(seq $(( ${BOX} + 1 )) ${MAX}); do
-                for J in $(seq 1 ${FLAGBOX_SIZE}); do
-                  FLAGBOX[$(( ${I} - 1 )),${J}]=${FLAGBOX[${I},${J}]}
-                done
-              done
-              for I in $(seq 1 ${FLAGBOX_SIZE}); do
-                unset FLAGBOX[${FLAGBOX[MAX]},${J}]
-              done
-              (( FLAGBOX[MAX]-=1 ))
-              [[ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ]] && (( FLAGBOX[BOX]-=1 ))
-              BOX_DELETED=true
-            fi
+            for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
+              unset FLAGBOX[${FLAGBOX[MAX]},${J}]
+            done
+            (( FLAGBOX[MAX]-=1 ))
+            [[ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ]] && (( FLAGBOX[BOX]-=1 ))
+            BOX_DELETED=true
+          fi
         fi
 
-        if ! ${BOX_DELETED}; then
-          for I in $(seq 1 ${#CHAIN}); do
+        if [[ "${BOX_DELETED}" == "false" ]]; then
+          for ((I=1;I<=${#CHAIN};I++)); do
             if [[ "${CHAIN:$(( ${I} - 1 )):1}" == "1" ]]; then
               FLAGBOX[${FLAGBOX[BOX]},${I}]=''
             fi
           done
         fi
-        ${FLAGBOX_VRESET} && flagbox --chain 1
+        [[ "${FLAGBOX_VRESET}" == "true" ]] && flagbox --chain 1
 
 #     }}}
 #     NAVIGATION mode {{{3
@@ -481,7 +530,7 @@ function flagbox () {
       elif [[ "${FLAGBOX[MODE]}" == "NAV" ]]; then
         DECIMAL=$(( 2#${CHAIN} ))
         if [[ ${DECIMAL} -gt 0 && ${DECIMAL} -le ${FLAGBOX[MAX]} ]]; then
-          FLAGBOX[BOX] = ${DECIMAL}
+          FLAGBOX[BOX]=${DECIMAL}
         fi
       fi
 
@@ -494,49 +543,45 @@ function flagbox () {
 
     elif [[ "${CHAIN}" == "1" ]]; then
       local TEXT=""
+      local TEXT_LINE=""
+      local FLAG=""
       local BOXTEXT=""
       local BAR=""
-      local TEXTLEN=0
+      local TEXT_WIDTH=0
       local BARLEN=0
-      local HEIGHT=0
-      declare -a DIR
-      for I in $(seq 1 ${FLAGBOX_SIZE}); do
-        [[ "$(realpath .)" == "${FLAGBOX[${FLAGBOX[BOX]},${I}]}" ]] && DIR+=(${I})
-        TEXT="${TEXT}$(printf %${I}s \
-          | tr ' ' "${FLAGBOX_SYMB1}") = ${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+      local HEIGHT=$(( ${FLAGBOX_SIZE} + 1 ))
+      [[ "${FLAGBOX_FOLDLISTING}" == "true" ]] && (( HEIGHT+=1 ))
+      for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
+        FLAG="$(printf %${I}s)"
+        FLAG="${FLAG//[[:space:]]/${FLAGBOX_KEY1}}"
+        TEXT_LINE="${FLAG} = ${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
+        [[ ${#TEXT_LINE} -gt ${TEXT_WIDTH} ]] && TEXT_WIDTH=${#TEXT_LINE}
+        if [[ "${PWD}" == "${FLAGBOX[${FLAGBOX[BOX]},${I}]}" ]]; then
+          TEXT="${TEXT}${REVERSE}${TEXT_LINE}${RESET}"
+        else
+          TEXT="${TEXT}${TEXT_LINE}"
+        fi
         [[ ${I} -lt ${FLAGBOX_SIZE} ]] && TEXT="${TEXT}\n"
       done
-      TEXTLEN=$(echo -e "${TEXT}" | wc -L)
       BOXTEXT="[ Box ${FLAGBOX[BOX]}/${FLAGBOX[MAX]} | ${FLAGBOX[MODE]} ]"
-      BARLEN=$(echo -e "0\n$(( ( ${TEXTLEN} - ${#BOXTEXT} + 1) / 2 ))" \
-        | sort -n -r | head -n 1)
-      BAR="$(printf %${BARLEN}s | tr ' ' '=')"
-      ${FLAGBOX_FOLDLISTING} \
-        && while IFS= read -r LINE; do \
-             (( HEIGHT+=(${#LINE}/${COLUMNS})+1 )); \
-           done < <(echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}")
-      TEXT=$(printf "${TEXT}\n" | { \
-        I=1; \
-        while IFS= read -r LINE; do \
-          if [[ $(printf "%s " "${DIR[@]}" | tr ' ' '\n' | grep -x "${I}" \
-            | wc -l) -gt 0 ]]; then \
-              echo "${REVERSE}${LINE}${RESET}"; \
-          else \
-            echo "${LINE}"; \
-          fi; \
-          (( I+=1 )); \
-        done; \
-      })
+      BARLEN=$(( ( ${TEXT_WIDTH} - ${#BOXTEXT} + 1) / 2 ))
+      BARLEN=$(( 0 > ${BARLEN} ? 0 : ${BARLEN} ))
+      BAR="$(printf %${BARLEN}s)"
+      BAR="${BAR//[[:space:]]/=}"
       echo -e "${BAR}${BOXTEXT}${BAR}\n${TEXT}"
-      if ${FLAGBOX_FOLDLISTING}; then
-        echo "Press ? to continue"
-        while true; do
-          read -s -n 1 INPUT <&1
-          [[ "${INPUT}" == "?" ]] && break
-        done
-        tput cuu $(( ${HEIGHT} + 1 )) && tput ed
+      if [[ "${FLAGBOX_FOLDLISTING}" == "true" ]]; then
+        if [[ ${HEIGHT} -le ${LINES} && ${TEXT_WIDTH} -le ${COLUMNS} ]]; then
+          echo -n "Press ? to continue"
+          while :; do
+            read -s -n 1 INPUT <&1
+            [[ "${INPUT}" == "?" ]] && break
+          done
+          echo -e -n "\e[${LINES}D\e[$(( ${HEIGHT} - 1 ))A\e[J"
+        else
+          echo "Flagbox foldlisting setting ignored"
+        fi
       fi
-      unset TEXT TEXTLEN BOXTEXT BARLEN BAR HEIGHT DIR
+      unset TEXT TEXT_LINE TEXT_WIDTH BOXTEXT BARLEN BAR HEIGHT
 
 #   }}}
 #   Backup chains {{{2
@@ -547,11 +592,11 @@ function flagbox () {
       local TEXT=""
       local I=1
       local J=1
-      for I in $(seq 1 ${FLAGBOX_SIZE}); do
+      for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
         CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
       done
       if [[ "x${FILE}" != "x" ]]; then
-        BACKUP="$(realpath ${FILE})"
+        BACKUP="$(cd "$(direc "${FILE}")" && echo ${PWD})/$(base "${FILE}")"
       fi
 
 #     Restore {{{3
@@ -565,25 +610,25 @@ function flagbox () {
             (( I+=1 ))
           done < ${BACKUP}
 
-          echo "${GREEN}Marks restored with:${RESET} ${BACKUP}"
-          ${FLAGBOX_VRESTORE} && flagbox --chain 1
+          echo -e "${GREEN}Marks restored with:${RESET} ${BACKUP}"
+          [[ "${FLAGBOX_VRESTORE}" == "true" ]] && flagbox --chain 1
         fi
 
 #     }}}
 #     Save {{{3
 
       else
-        if ${FLAGBOX_BACKUPCONFIRM}; then
-          [[ -f ${BACKUP} ]] && rm -iv ${BACKUP}
+        if [[ "${FLAGBOX_BACKUPCONFIRM}" == "true" ]]; then
+          [[ -f "${BACKUP}" ]] && rm -iv ${BACKUP}
         else
-          [[ -f ${BACKUP} ]] && rm ${BACKUP}
+          [[ -f "${BACKUP}" ]] && rm ${BACKUP}
         fi
         I=1
-        for I in $(seq 1 ${FLAGBOX_SIZE}); do
+        for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
           TEXT="${TEXT}$(echo "${FLAGBOX[${FLAGBOX[BOX]},${I}]}")\n"
         done
         printf "${TEXT}" > "${BACKUP}" \
-          && echo "${GREEN}Box marks saved at:${RESET} ${BACKUP}"
+          && echo -e "${GREEN}Box marks saved at:${RESET} ${BACKUP}"
       fi
 
 #     }}}
@@ -595,30 +640,29 @@ function flagbox () {
 
     elif [[ "${CHAIN}" == "01" ]]; then
       local CONCAT=""
-      for I in $(seq 1 ${FLAGBOX_SIZE}); do
+      for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
         CONCAT="${CONCAT}x${FLAGBOX[${FLAGBOX[BOX]},${I}]}"
       done
       if [[ ${FLAGBOX[BOX]} -lt ${FLAGBOX[MAX]} ]]; then
         (( FLAGBOX[BOX]+=1 ))
       elif [[ ${#CONCAT} -gt ${FLAGBOX_SIZE} ]]; then
         (( FLAGBOX[BOX]+=1 ))
-        for I in $(seq 1 ${FLAGBOX_SIZE}); do
+        for ((I=1;I<=${FLAGBOX_SIZE};I++)); do
           FLAGBOX[${FLAGBOX[BOX]},${I}]=''
         done
       else
         FLAGBOX[BOX]=1
       fi
-      FLAGBOX[MAX]=$(echo -e "${FLAGBOX[BOX]}\n${FLAGBOX[MAX]}" \
-        | sort -n -r | head -n 1)
+      [[ ${FLAGBOX[BOX]} -gt ${FLAGBOX[MAX]} ]] && FLAGBOX[MAX]=${FLAGBOX[BOX]}
       unset CONCAT
-      ${FLAGBOX_VNAV} && flagbox --chain 1
+      [[ "${FLAGBOX_VNAV}" == "true" ]] && flagbox --chain 1
     elif [[ "${CHAIN}" == "10" ]]; then
       if [[ ${FLAGBOX[BOX]} -gt 1 ]]; then
         (( FLAGBOX[BOX]-=1 ))
       else
         FLAGBOX[BOX]=${FLAGBOX[MAX]}
       fi
-      ${FLAGBOX_VNAV} && flagbox --chain 1
+      [[ "${FLAGBOX_VNAV}" == "true" ]] && flagbox --chain 1
     fi
 
 #   }}}
@@ -627,5 +671,4 @@ function flagbox () {
   fi
 }
 
-[[ -f "${HOME}/.flagbox.conf" ]] && source "${HOME}/.flagbox.conf"
-flagbox --source
+flagbox

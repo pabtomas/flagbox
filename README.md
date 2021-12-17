@@ -70,21 +70,40 @@ If you want to learn about advanced features, you can read the
 
 ## Installation
 
+This repository suggests 2 methods to use *Flagbox*. Depending of your usage
+you the installation steps are different.
+
+### First usage installation:
+
+*Flagbox* will source a script. This script will generate aliases described in
+the documentation, will build 1 function and will define 1 environment
+variable (1 associated array) in your current shell. If this specification is
+not respected, please open an issue, I will fix it. If it is OK to integrate
+this specification in your workspace, here are the steps:
+
 1. `git clone https://github.com/pabtomas/flagbox.git`
-2. copy `flagbox/flagbox` in your `$PATH`:
+2. copy `flagbox/sourceme.sh` where you want:
 ```
-mkdir -p ${HOME}/.local/bin/
-cp flagbox/flagbox ${HOME}/.local/bin/
-
-# You can put this line in your profile if you do not want write it each time
-# you open a new terminal:
-export PATH=${HOME}/.local/bin:${PATH}
+cp flagbox/sourceme.sh ${WHERE_YOU_WANT}
 ```
-Now you can use flagbox with default configuration after a simple run:
-`flagbox`
+3. `sourceme.sh` generates aliases in the shell the script is sourced so you
+have to put this line in your `~/.bashrc` or your `~/.bash_aliases` (which
+should be sourced by your `~/.bashrc`):
+```
+source ${WHERE_YOU_WANT}/sourceme.sh
+```
 
-Extra step if you want use flagbox after launching your terminal:
-5. add `source $(which flagbox)` into `~/.bashrc`
+### Second usage installation
+
+If you are concerned by one or more of these reasons, the second usage is for
+you:
+- sourcing a script you do not written is risky,
+- generating aliases is a deprecated Bash feature,
+- having an executable is a better practice,
+- integrating environment variables and functions in your workspace is not
+possible
+
+TODO
 
 ## Contribution
 

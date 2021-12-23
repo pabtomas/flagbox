@@ -83,7 +83,7 @@ cp flagbox/sourceme.sh ${WHERE_YOU_WANT}
 ```
 3. `sourceme.sh` generates aliases in the shell where it is sourced so you
 have to put this line in your `~/.bashrc` or your `~/.bash_aliases` (which
-should be sourced by your `~/.bashrc`):
+should be sourced in your `~/.bashrc`):
 ```
 source ${WHERE_YOU_WANT}/sourceme.sh
 ```

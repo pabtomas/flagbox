@@ -312,7 +312,7 @@ flagbox () {
 #   }}}
 # }}}
   else
-# Chainis {{{1
+# Chains {{{1
 #   Trigger-flag chains {{{2
 
     if [[ ${CHAIN} -eq 0 ]]; then
@@ -364,7 +364,7 @@ flagbox () {
             declare -a BIN=( $(
               I=1
               J=$(echo {0..1})
-              while [[ ${I} -lt ${FLAGBOX_SIZE} ]]; do
+              while [[ ${I} -lt ${LENGTH} ]]; do
                 J=$(for K in ${J}; do
                       B=$(echo ${K}{0..1})
                       echo "${B//[[:space:]]/$'\n'}"
@@ -445,7 +445,7 @@ flagbox () {
           if [[ -d "${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}" ]]; then
             cd ${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}
           else
-            echo -e "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}{RED} is not available${RESET}"
+            echo -e "${RED}Directory pointed by flag ${RESET}${FLAGBOX[${FLAGBOX[BOX]},${#CHAIN}]}${RED} is not available${RESET}"
           fi
         fi
       fi

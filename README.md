@@ -70,11 +70,6 @@ If you want to learn about advanced features, you can read the
 
 ## Installation
 
-This repository suggests 2 methods to use *Flagbox*. Depending of your usage
-you the installation steps are different.
-
-### First usage installation:
-
 *Flagbox* will source a script. This script will generate aliases described in
 the documentation, will build 1 function and will define 1 environment
 variable (1 associated array) in your current shell. If this specification is
@@ -86,24 +81,12 @@ this specification in your workspace, here are the steps:
 ```
 cp flagbox/sourceme.sh ${WHERE_YOU_WANT}
 ```
-3. `sourceme.sh` generates aliases in the shell the script is sourced so you
+3. `sourceme.sh` generates aliases in the shell where it is sourced so you
 have to put this line in your `~/.bashrc` or your `~/.bash_aliases` (which
-should be sourced by your `~/.bashrc`):
+should be sourced in your `~/.bashrc`):
 ```
 source ${WHERE_YOU_WANT}/sourceme.sh
 ```
-
-### Second usage installation
-
-If you are concerned by one or more of these reasons, the second usage is for
-you:
-- sourcing a script you do not written is risky,
-- generating aliases is a deprecated Bash feature,
-- having an executable is a better practice,
-- integrating environment variables and functions in your workspace is not
-possible
-
-TODO
 
 ## Contribution
 
